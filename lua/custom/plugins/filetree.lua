@@ -21,6 +21,10 @@ return {
           enabled = true, -- This will find and focus the file in the active buffer every time
         },
       },
+      window = {
+        position = "left",
+        width = 30,
+      },
     })
   end,
 }
