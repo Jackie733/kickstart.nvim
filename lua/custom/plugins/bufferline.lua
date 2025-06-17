@@ -14,6 +14,7 @@ return {
     { '[B', '<cmd>BufferLineMovePrev<cr>', desc = 'Move buffer prev' },
     { ']B', '<cmd>BufferLineMoveNext<cr>', desc = 'Move buffer next' },
   },
+  -- FIXME: did not show bufferline
   config = function()
     vim.opt.termguicolors = true
     local bufferline = require 'bufferline'
@@ -26,6 +27,15 @@ return {
           enabled = true,
           delay = 200,
           reveal = { 'close' },
+        },
+        diagnostics = 'nvim_lsp',
+        offsets = {
+          {
+            filetype = 'NvimTree',
+            text = 'File Explorer',
+            text_align = 'center',
+            separator = true,
+          },
         },
         always_show_bufferline = true,
       },
