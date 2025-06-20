@@ -71,10 +71,6 @@ return {
       end
     end,
     opts = function()
-      -- PERF: we don't need this lualine require madness 🤷
-      local lualine_require = require 'lualine_require'
-      lualine_require.require = require
-
       local icons = TsienVim.icons
 
       vim.o.laststatus = vim.g.lualine_laststatus
@@ -90,18 +86,11 @@ return {
           lualine_b = { 'branch' },
 
           lualine_c = {
-            -- LazyVim.lualine.root_dir(),
             {
-              'diagnostics',
-              symbols = {
-                error = icons.diagnostics.Error,
-                warn = icons.diagnostics.Warn,
-                info = icons.diagnostics.Info,
-                hint = icons.diagnostics.Hint,
-              },
+              'filename',
+              file_status = true,
+              path = 1,
             },
-            { 'filetype', icon_only = true, separator = '', padding = { left = 1, right = 0 } },
-            -- { LazyVim.lualine.pretty_path() },
           },
           lualine_x = {
             Snacks.profiler.status(),
@@ -215,7 +204,7 @@ return {
           command_palette = true, -- position the cmdline and popupmenu together
           long_message_to_split = true, -- long messages will be sent to a split
           inc_rename = false, -- enables an input dialog for inc-rename.nvim
-          lsp_doc_border = false, -- add a border to hover docs and signature help
+          lsp_doc_border = true, -- add a border to hover docs and signature help
         },
       }
     end,
@@ -283,10 +272,11 @@ return {
       dashboard.section.header.val = vim.split(logo, '\n')
     -- stylua: ignore
     dashboard.section.buttons.val = {
-      dashboard.button( "f", "  > Find file", ":Telescope find_files <CR>"),
+      dashboard.button( "f", "  > Find file", ":Telescope find_files <CR>"),
       dashboard.button( "r", "  > Recent"   , ":Telescope oldfiles<CR>"),
-      dashboard.button( "t", "  > Find text", ":Telescope live_grep <CR>"),
-      dashboard.button( "q", "  > Quit", ":qa<CR>"),
+      dashboard.button( "t", "  > Find text", ":Telescope live_grep <CR>"),
+      dashboard.button( "l", "󰒲  > Lazy", ":Lazy<CR>"),
+      dashboard.button( "q", "  > Quit", ":qa<CR>"),
     }
       for _, button in ipairs(dashboard.section.buttons.val) do
         button.opts.hl = 'AlphaButtons'
