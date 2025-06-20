@@ -285,7 +285,7 @@ return {
     dashboard.section.buttons.val = {
       dashboard.button( "f", "  > Find file", ":Telescope find_files <CR>"),
       dashboard.button( "r", "  > Recent"   , ":Telescope oldfiles<CR>"),
-      dashboard.button("t", "  Find text", ":Telescope live_grep <CR>"),
+      dashboard.button( "t", "  > Find text", ":Telescope live_grep <CR>"),
       dashboard.button( "q", "  > Quit", ":qa<CR>"),
     }
       for _, button in ipairs(dashboard.section.buttons.val) do
