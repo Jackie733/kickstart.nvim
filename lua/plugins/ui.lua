@@ -89,20 +89,20 @@ return {
           lualine_a = { 'mode' },
           lualine_b = { 'branch' },
 
-          -- lualine_c = {
-          --   LazyVim.lualine.root_dir(),
-          --   {
-          --     'diagnostics',
-          --     symbols = {
-          --       error = icons.diagnostics.Error,
-          --       warn = icons.diagnostics.Warn,
-          --       info = icons.diagnostics.Info,
-          --       hint = icons.diagnostics.Hint,
-          --     },
-          --   },
-          --   { 'filetype', icon_only = true, separator = '', padding = { left = 1, right = 0 } },
-          --   { LazyVim.lualine.pretty_path() },
-          -- },
+          lualine_c = {
+            -- LazyVim.lualine.root_dir(),
+            {
+              'diagnostics',
+              symbols = {
+                error = icons.diagnostics.Error,
+                warn = icons.diagnostics.Warn,
+                info = icons.diagnostics.Info,
+                hint = icons.diagnostics.Hint,
+              },
+            },
+            { 'filetype', icon_only = true, separator = '', padding = { left = 1, right = 0 } },
+            -- { LazyVim.lualine.pretty_path() },
+          },
           lualine_x = {
             Snacks.profiler.status(),
             -- stylua: ignore
@@ -184,6 +184,42 @@ return {
       return opts
     end,
   },
+  -- noice
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      'MunifTanjim/nui.nvim',
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      'rcarriga/nvim-notify',
+    },
+    config = function()
+      require('noice').setup {
+        lsp = {
+          -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+          override = {
+            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+            ['vim.lsp.util.stylize_markdown'] = true,
+            ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
+          },
+        },
+        -- you can enable a preset for easier configuration
+        presets = {
+          bottom_search = true, -- use a classic bottom cmdline for search
+          command_palette = true, -- position the cmdline and popupmenu together
+          long_message_to_split = true, -- long messages will be sent to a split
+          inc_rename = false, -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = false, -- add a border to hover docs and signature help
+        },
+      }
+    end,
+  },
   -- icons
   {
     'echasnovski/mini.icons',
@@ -207,4 +243,86 @@ return {
 
   -- ui components
   { 'MunifTanjim/nui.nvim', lazy = true },
+  {
+    'snacks.nvim',
+    opts = {
+      indent = { enabled = true },
+      input = { enabled = true },
+      notifier = { enabled = true },
+      scope = { enabled = true },
+      scroll = { enabled = true },
+      statuscolumn = { enabled = false }, -- we set this in options.lua
+      -- toggle = { map = LazyVim.safe_keymap_set },
+      words = { enabled = true },
+    },
+    -- stylua: ignore
+    keys = {
+      { "<leader>n", function()
+        if Snacks.config.picker and Snacks.config.picker.enabled then
+          Snacks.picker.notifications()
+        else
+          Snacks.notifier.show_history()
+        end
+      end, desc = "Notification History" },
+      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+    },
+  },
+  {
+    'goolord/alpha-nvim',
+    event = 'VimEnter',
+    opts = function()
+      local dashboard = require 'alpha.themes.dashboard'
+      local logo = [[
+ ______   ______     __     ______     __   __
+/\__  _\ /\  ___\   /\ \   /\  ___\   /\ "-.\ \
+\/_/\ \/ \ \___  \  \ \ \  \ \  __\   \ \ \-.  \
+   \ \_\  \/\_____\  \ \_\  \ \_____\  \ \_\\"\_\
+    \/_/   \/_____/   \/_/   \/_____/   \/_/ \/_/
+                                                  ]]
+
+      dashboard.section.header.val = vim.split(logo, '\n')
+    -- stylua: ignore
+    dashboard.section.buttons.val = {
+      dashboard.button( "f", "  > Find file", ":Telescope find_files <CR>"),
+      dashboard.button( "r", "  > Recent"   , ":Telescope oldfiles<CR>"),
+      dashboard.button("t", "  Find text", ":Telescope live_grep <CR>"),
+      dashboard.button( "q", "  > Quit", ":qa<CR>"),
+    }
+      for _, button in ipairs(dashboard.section.buttons.val) do
+        button.opts.hl = 'AlphaButtons'
+        button.opts.hl_shortcut = 'AlphaShortcut'
+      end
+      dashboard.section.header.opts.hl = 'AlphaHeader'
+      dashboard.section.buttons.opts.hl = 'AlphaButtons'
+      dashboard.section.footer.opts.hl = 'AlphaFooter'
+      dashboard.opts.layout[1].val = 8
+      return dashboard
+    end,
+    config = function(_, dashboard)
+      -- close Lazy and re-open when the dashboard is ready
+      if vim.o.filetype == 'lazy' then
+        vim.cmd.close()
+        vim.api.nvim_create_autocmd('User', {
+          once = true,
+          pattern = 'AlphaReady',
+          callback = function()
+            require('lazy').show()
+          end,
+        })
+      end
+
+      require('alpha').setup(dashboard.opts)
+
+      vim.api.nvim_create_autocmd('User', {
+        once = true,
+        pattern = 'LazyVimStarted',
+        callback = function()
+          local stats = require('lazy').stats()
+          local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+          dashboard.section.footer.val = '⚡ Neovim loaded ' .. stats.loaded .. '/' .. stats.count .. ' plugins in ' .. ms .. 'ms'
+          pcall(vim.cmd.AlphaRedraw)
+        end,
+      })
+    end,
+  },
 }

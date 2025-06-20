@@ -1,20 +1,28 @@
 return {
-  {
+  { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
-    opts = function(_, opts)
-      -- use wildfire.nvim for incremental selection instead
-      opts.incremental_selection = {
-        enable = false,
-      }
-
-      opts.context_commentstring = {
-        enable_autocmd = false,
-      }
-
-      vim.list_extend(opts.ensure_installed, {
-        'vue',
-      })
-    end,
+    build = ':TSUpdate',
+    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+    opts = {
+      ensure_installed = { 'bash', 'c', 'diff', 'css', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'typescript', 'rust', 'vue' },
+      -- Autoinstall languages that are not installed
+      auto_install = true,
+      highlight = {
+        enable = true,
+        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+        --  If you are experiencing weird indenting issues, add the language to
+        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
+        additional_vim_regex_highlighting = { 'ruby' },
+      },
+      indent = { enable = true, disable = { 'ruby' } },
+    },
+    -- There are additional nvim-treesitter modules that you can use to interact
+    -- with nvim-treesitter. You should go explore a few and see what interests you:
+    --
+    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
+    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
+    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
   {
     'nvim-treesitter/nvim-treesitter-context',
@@ -37,21 +45,6 @@ return {
         separator = nil,
         zindex = 20, -- The Z-index of the context window
         on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
-      }
-    end,
-  },
-  {
-    'sustech-data/wildfire.nvim',
-    event = 'VeryLazy',
-    vscode = true,
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    config = function()
-      require('wildfire').setup {
-        keymaps = {
-          init_selection = '<CR>',
-          node_incremental = '<CR>',
-          node_decremental = '<BS>',
-        },
       }
     end,
   },
