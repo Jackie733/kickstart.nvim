@@ -19,6 +19,25 @@ return {
   opts = {
     sources = { 'filesystem', 'buffers', 'git_status', 'document_symbols' },
     open_files_do_not_replace_types = { 'terminal', 'Trouble', 'trouble', 'qf', 'Outline' },
+    -- 新增/重命名文件后自动定位
+    event_handlers = {
+      {
+        event = 'file_added',
+        handler = function(file_path)
+          vim.schedule(function()
+            require('neo-tree.command').execute { action = 'show', reveal_file = file_path }
+          end)
+        end,
+      },
+      {
+        event = 'file_renamed',
+        handler = function(args)
+          vim.schedule(function()
+            require('neo-tree.command').execute { action = 'show', reveal_file = args.destination }
+          end)
+        end,
+      },
+    },
     filesystem = {
       bind_to_cwd = false,
       follow_current_file = { enabled = true },
