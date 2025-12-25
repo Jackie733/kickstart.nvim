@@ -68,6 +68,14 @@ return {
             -- WhichKey 弹窗
             WhichKeyNormal = { bg = 'none' },
             WhichKeyBorder = { bg = 'none', fg = theme.ui.float.fg_border },
+
+            -- Blink.cmp 补全菜单透明
+            BlinkCmpMenu = { bg = 'none' },
+            BlinkCmpMenuBorder = { bg = 'none' },
+            BlinkCmpDoc = { bg = 'none' },
+            BlinkCmpDocBorder = { bg = 'none' },
+            BlinkCmpSignatureHelp = { bg = 'none' },
+            BlinkCmpSignatureHelpBorder = { bg = 'none' },
           }
         end,
       }
