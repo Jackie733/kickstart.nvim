@@ -35,6 +35,14 @@ end)
 -- Enable break indent
 vim.o.breakindent = true
 
+-- 自动缩进设置
+vim.o.autoindent = true    -- 新行继承当前行的缩进
+vim.o.smartindent = true   -- 智能缩进（根据语法自动调整）
+vim.o.expandtab = true     -- 用空格代替 Tab
+vim.o.shiftwidth = 2       -- 缩进宽度
+vim.o.tabstop = 2          -- Tab 显示宽度
+vim.o.softtabstop = 2      -- 编辑时 Tab 宽度
+
 -- Save undo history
 vim.o.undofile = true
 
