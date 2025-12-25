@@ -40,8 +40,8 @@ map('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
 -- Move cursor
--- map('n', '<C-j>', '6j')
--- map('n', '<C-k>', '6k')
+map('n', '<C-j>', '6j')
+map('n', '<C-k>', '6k')
 
 -- quit
 map('n', '<leader>qq', '<cmd>qa<cr>', { desc = 'Quit All' })

@@ -205,10 +205,11 @@ return {
       -- Some languages (like typescript) have entire language plugins that can be useful:
       --    https://github.com/pmizio/typescript-tools.nvim
       --
-      -- But for many setups, the LSP (`ts_ls`) will work just fine
-      ts_ls = {},
+      -- NOTE: 只使用 vtsls，不需要 ts_ls（两者功能重复，vtsls 更快）
+      -- ts_ls = {},
       vtsls = {},
-      vue_ls = {},
+      -- NOTE: vtsls 已通过 @vue/typescript-plugin 支持 Vue，不需要独立的 vue_ls
+      -- vue_ls = {},
       eslint = {},
       tailwindcss = {},
       lua_ls = {
