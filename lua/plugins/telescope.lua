@@ -47,12 +47,37 @@ return { -- Fuzzy Finder (files, lsp, etc)
       -- You can put your default mappings / updates / etc. in here
       --  All the info you're looking for is in `:help telescope.setup()`
       --
-      -- defaults = {
-      --   mappings = {
-      --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-      --   },
-      -- },
-      -- pickers = {}
+      defaults = {
+        -- 使用浮动窗口主题
+        layout_strategy = 'horizontal',
+        layout_config = {
+          horizontal = {
+            preview_width = 0.55,
+          },
+        },
+        -- mappings = {
+        --   i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+        -- },
+      },
+      pickers = {
+        -- LSP 相关的 picker：只有一个结果时直接跳转，多个结果显示列表
+        lsp_definitions = {
+          reuse_win = true, -- 复用当前窗口
+          show_line = false,
+        },
+        lsp_references = {
+          reuse_win = true,
+          show_line = false,
+        },
+        lsp_implementations = {
+          reuse_win = true,
+          show_line = false,
+        },
+        lsp_type_definitions = {
+          reuse_win = true,
+          show_line = false,
+        },
+      },
       extensions = {
         ['ui-select'] = {
           require('telescope.themes').get_dropdown(),

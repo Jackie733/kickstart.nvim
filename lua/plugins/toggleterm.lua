@@ -16,10 +16,17 @@ return {
       -- 注意：<C-t> 会立即加载插件，如果你希望完全延迟加载，可以移除这个映射
       -- 然后在上面的 `keys` 表中添加一个 <C-t> 的映射
       open_mapping = [[<c-\>]],
+      direction = 'float', -- 默认使用浮动窗口，不会影响 buffer 布局
       shading_factor = 2,
       float_opts = {
         border = 'rounded',
         winblend = 0,
+        width = function()
+          return math.floor(vim.o.columns * 0.9)
+        end,
+        height = function()
+          return math.floor(vim.o.lines * 0.9)
+        end,
         highlights = {
           border = 'FloatBorder',
           background = 'Normal',

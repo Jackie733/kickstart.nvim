@@ -9,9 +9,6 @@ return {
     'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
 
-    -- Useful status updates for LSP.
-    { 'j-hui/fidget.nvim', opts = {} },
-
     -- Allows extra capabilities provided by blink.cmp
     'saghen/blink.cmp',
   },
@@ -58,7 +55,8 @@ return {
           vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
 
-        map('gd', vim.lsp.buf.definition, '[G]oto Define')
+        -- 使用 Telescope 处理 go to definition，多个结果时显示浮窗选择
+        map('gd', require('telescope.builtin').lsp_definitions, '[G]oto Define')
         -- Rename the variable under your cursor.
         --  Most Language Servers support renaming across files, etc.
         map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
@@ -81,7 +79,7 @@ return {
 
         -- WARN: This is not Goto Definition, this is Goto Declaration.
         --  For example, in C this would take you to the header.
-        map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+        map('grD', require('telescope.builtin').lsp_type_definitions, '[G]oto Type [D]efinition')
 
         -- Fuzzy find all the symbols in your current document.
         --  Symbols are things like variables, functions, types, etc.
