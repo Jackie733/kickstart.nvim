@@ -134,9 +134,7 @@ return {
             { 'location', padding = { left = 0, right = 1 } },
           },
           lualine_z = {
-            function()
-              return ' ' .. os.date '%R'
-            end,
+            'filetype',
           },
         },
         extensions = { 'neo-tree', 'lazy', 'fzf' },
@@ -238,7 +236,7 @@ return {
       input = { enabled = true },
       notifier = { enabled = true },
       scope = { enabled = true },
-      scroll = { enabled = true },
+      scroll = { enabled = false }, -- 禁用滚动动画以提高性能
       statuscolumn = { enabled = false }, -- we set this in options.lua
       -- toggle = { map = LazyVim.safe_keymap_set },
       words = { enabled = true },

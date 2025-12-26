@@ -39,10 +39,6 @@ map('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
--- Move cursor
-map('n', '<C-j>', '6j')
-map('n', '<C-k>', '6k')
-
 -- quit
 map('n', '<leader>qq', '<cmd>qa<cr>', { desc = 'Quit All' })
 
@@ -61,10 +57,6 @@ map('v', '<A-j>', ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc 
 map('v', '<A-k>', ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = 'Move Up' })
 
 -- buffers
-map('n', '<S-h>', '<cmd>bprevious<cr>', { desc = 'Prev Buffer' })
-map('n', '<S-l>', '<cmd>bnext<cr>', { desc = 'Next Buffer' })
-map('n', '[b', '<cmd>bprevious<cr>', { desc = 'Prev Buffer' })
-map('n', ']b', '<cmd>bnext<cr>', { desc = 'Next Buffer' })
 map('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Switch to Other Buffer' })
 map('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Switch to Other Buffer' })
 map('n', '<leader>bd', function()
