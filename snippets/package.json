@@ -1,0 +1,19 @@
+{
+  "name": "nvim-snippets",
+  "contributes": {
+    "snippets": [
+      {
+        "language": "vue",
+        "path": "./vue.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./typescript.json"
+      },
+      {
+        "language": "javascript",
+        "path": "./javascript.json"
+      }
+    ]
+  }
+}

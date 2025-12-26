@@ -1,0 +1,98 @@
+{
+  "Vue 3 SFC TypeScript": {
+    "prefix": ["vue-ts", "vts"],
+    "description": "Vue 3 SFC template with TypeScript and script setup",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <slot>",
+      "    ",
+      "  </slot>",
+      "</template>",
+      "",
+      "<style scoped>",
+      "",
+      "</style>"
+    ]
+  },
+  "Vue 3 SFC TypeScript with Props": {
+    "prefix": ["vue-ts-props", "vtsp"],
+    "description": "Vue 3 SFC with TypeScript, props and emits",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "interface Props {",
+      "  ${1:propName}: ${2:string}",
+      "}",
+      "",
+      "const props = defineProps<Props>()",
+      "",
+      "const emit = defineEmits<{",
+      "  ${3:eventName}: [${4:payload}: ${5:string}]",
+      "}>()",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <slot>",
+      "    ",
+      "  </slot>",
+      "</template>",
+      "",
+      "<style scoped>",
+      "",
+      "</style>"
+    ]
+  },
+  "Vue 3 Composable": {
+    "prefix": ["vue-composable", "vcomp"],
+    "description": "Vue 3 Composable function",
+    "body": [
+      "import { ref, computed } from 'vue'",
+      "",
+      "export function use${1:Name}() {",
+      "  const ${2:state} = ref(${3:null})",
+      "",
+      "  $0",
+      "",
+      "  return {",
+      "    $2,",
+      "  }",
+      "}"
+    ]
+  },
+  "Vue ref": {
+    "prefix": ["vref"],
+    "description": "Vue 3 ref",
+    "body": ["const ${1:name} = ref<${2:string}>(${3:''})$0"]
+  },
+  "Vue reactive": {
+    "prefix": ["vreactive"],
+    "description": "Vue 3 reactive",
+    "body": ["const ${1:state} = reactive({", "  $0", "})"]
+  },
+  "Vue computed": {
+    "prefix": ["vcomputed"],
+    "description": "Vue 3 computed",
+    "body": ["const ${1:name} = computed(() => {", "  $0", "})"]
+  },
+  "Vue watch": {
+    "prefix": ["vwatch"],
+    "description": "Vue 3 watch",
+    "body": [
+      "watch(",
+      "  () => ${1:source},",
+      "  (newVal, oldVal) => {",
+      "    $0",
+      "  }",
+      ")"
+    ]
+  },
+  "Vue onMounted": {
+    "prefix": ["vonmounted"],
+    "description": "Vue 3 onMounted hook",
+    "body": ["onMounted(() => {", "  $0", "})"]
+  }
+}

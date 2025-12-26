@@ -1,0 +1,38 @@
+{
+  "Console log": {
+    "prefix": ["clg", "log"],
+    "description": "Console log",
+    "body": ["console.log($0)"]
+  },
+  "Arrow function": {
+    "prefix": ["af", "arrow"],
+    "description": "Arrow function",
+    "body": ["const ${1:name} = (${2:params}) => {", "  $0", "}"]
+  },
+  "Async arrow function": {
+    "prefix": ["aaf", "asyncarrow"],
+    "description": "Async arrow function",
+    "body": ["const ${1:name} = async (${2:params}) => {", "  $0", "}"]
+  },
+  "Try catch": {
+    "prefix": ["tc", "trycatch"],
+    "description": "Try catch block",
+    "body": [
+      "try {",
+      "  $0",
+      "} catch (error) {",
+      "  console.error(error)",
+      "}"
+    ]
+  },
+  "Import": {
+    "prefix": ["imp"],
+    "description": "Import module",
+    "body": ["import { $2 } from '${1:module}'$0"]
+  },
+  "Import default": {
+    "prefix": ["impd"],
+    "description": "Import default",
+    "body": ["import ${2:name} from '${1:module}'$0"]
+  }
+}
