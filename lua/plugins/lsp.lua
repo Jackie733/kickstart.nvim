@@ -206,8 +206,8 @@ return {
       -- NOTE: 只使用 vtsls，不需要 ts_ls（两者功能重复，vtsls 更快）
       -- ts_ls = {},
       vtsls = {},
-      -- NOTE: vtsls 已通过 @vue/typescript-plugin 支持 Vue，不需要独立的 vue_ls
-      -- vue_ls = {},
+      -- NOTE: vue_ls 提供 Vue SFC 完整支持，配合 vtsls 的 @vue/typescript-plugin 使用
+      vue_ls = {},
       eslint = {},
       tailwindcss = {},
       lua_ls = {
@@ -287,7 +287,49 @@ return {
       on_attach = function(client)
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
+        -- Vue 文件中禁用 vtsls 的语义高亮，由 vue_ls 提供
+        if vim.bo.filetype == 'vue' then
+          client.server_capabilities.semanticTokensProvider = nil
+        end
       end,
     })
+
+    -- Vue Language Server 配置
+    -- 参考: https://github.com/vuejs/language-tools/wiki/Neovim
+    vim.lsp.config('vue_ls', {
+      on_init = function(client)
+        -- 处理 vue_ls 到 vtsls 的 tsserver 请求转发
+        client.handlers['tsserver/request'] = function(_, result, context)
+          local clients = vim.lsp.get_clients { bufnr = context.bufnr, name = 'vtsls' }
+
+          if #clients == 0 then
+            vim.notify('Could not find `vtsls` lsp client, `vue_ls` would not work properly without it.', vim.log.levels.WARN)
+            return
+          end
+
+          local ts_client = clients[1]
+          local param = unpack(result)
+          local id, command, payload = unpack(param)
+
+          ts_client:exec_cmd({
+            title = 'vue_request_forward',
+            command = 'typescript.tsserverRequest',
+            arguments = { command, payload },
+          }, { bufnr = context.bufnr }, function(_, r)
+            local response = r and r.body
+            local response_data = { { id, response } }
+            ---@diagnostic disable-next-line: param-type-mismatch
+            client:notify('tsserver/response', response_data)
+          end)
+        end
+      end,
+      on_attach = function(client)
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentRangeFormattingProvider = false
+      end,
+    })
+
+    -- 自定义 Vue 组件高亮（从 vue-language-tools 3.0.2+ 开始需要）
+    vim.api.nvim_set_hl(0, '@lsp.type.component.vue', { link = '@type' })
   end,
 }
