@@ -263,7 +263,11 @@ return {
     vim.lsp.config('vtsls', {
       filetypes = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue' },
       settings = {
-        vtsls = { tsserver = { globalPlugins = {} } },
+        vtsls = {
+          tsserver = { globalPlugins = {} },
+          -- 自动使用项目中的 TypeScript 版本
+          autoUseWorkspaceTsdk = true,
+        },
         typescript = {
           inlayHints = {
             parameterNames = { enabled = 'literals' },
@@ -274,6 +278,17 @@ return {
             enumMemberValues = { enabled = true },
           },
         },
+      },
+      -- 处理 VS Code 专用命令，避免 "Command setContext not found" 错误
+      handlers = {
+        ['workspace/executeCommand'] = function(err, result, ctx, config)
+          -- 静默忽略 setContext 等 VS Code 专用命令
+          if ctx.params and ctx.params.command and ctx.params.command:match 'setContext' then
+            return nil
+          end
+          -- 其他命令走默认处理
+          return vim.lsp.handlers['workspace/executeCommand'](err, result, ctx, config)
+        end,
       },
       before_init = function(_, config)
         table.insert(config.settings.vtsls.tsserver.globalPlugins, {
@@ -296,33 +311,22 @@ return {
 
     -- Vue Language Server 配置
     -- 参考: https://github.com/vuejs/language-tools/wiki/Neovim
+    -- 注意：最新的 nvim-lspconfig 已内置 tsserver/request 转发，不需要手动配置 on_init
     vim.lsp.config('vue_ls', {
-      on_init = function(client)
-        -- 处理 vue_ls 到 vtsls 的 tsserver 请求转发
-        client.handlers['tsserver/request'] = function(_, result, context)
-          local clients = vim.lsp.get_clients { bufnr = context.bufnr, name = 'vtsls' }
-
-          if #clients == 0 then
-            vim.notify('Could not find `vtsls` lsp client, `vue_ls` would not work properly without it.', vim.log.levels.WARN)
-            return
-          end
-
-          local ts_client = clients[1]
-          local param = unpack(result)
-          local id, command, payload = unpack(param)
-
-          ts_client:exec_cmd({
-            title = 'vue_request_forward',
-            command = 'typescript.tsserverRequest',
-            arguments = { command, payload },
-          }, { bufnr = context.bufnr }, function(_, r)
-            local response = r and r.body
-            local response_data = { { id, response } }
-            ---@diagnostic disable-next-line: param-type-mismatch
-            client:notify('tsserver/response', response_data)
-          end)
-        end
-      end,
+      -- init_options 用于配置 vue_ls 使用的 TypeScript 版本
+      -- 不需要手动设置 hybridMode，它由 @vue/typescript-plugin 自动处理
+      init_options = {
+        typescript = {
+          -- 优先使用项目本地的 TypeScript，回退到 Mason 安装的版本
+          tsdk = (function()
+            local project_ts = vim.fn.getcwd() .. '/node_modules/typescript/lib'
+            if vim.fn.isdirectory(project_ts) == 1 then
+              return project_ts
+            end
+            return vim.fn.expand '$MASON/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
+          end)(),
+        },
+      },
       on_attach = function(client)
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
