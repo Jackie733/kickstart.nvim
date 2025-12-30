@@ -12,6 +12,9 @@ return {
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       require('mini.surround').setup()
 
+      -- Auto pairs
+      require('mini.pairs').setup()
+
       -- Simple and easy comment: gcc, gc{motion}, gc (visual)
       require('mini.comment').setup {
         options = {
