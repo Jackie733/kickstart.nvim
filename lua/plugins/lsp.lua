@@ -74,6 +74,7 @@ return {
         --  This is where a variable was first declared, or where a function is defined, etc.
         --  To jump back, press <C-t>.
         map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+        map('gd', vim.lsp.buf.definition, '[G]oto [d]efinition')
 
         -- Fuzzy find all the symbols in your current document.
         --  Symbols are things like variables, functions, types, etc.

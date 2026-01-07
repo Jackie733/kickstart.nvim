@@ -58,6 +58,17 @@ return {
         -- Toggles
         map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
         map('n', '<leader>tD', gitsigns.preview_hunk_inline, { desc = '[T]oggle git show [D]eleted' })
+        
+        -- Git blame info for current line
+        map('n', '<leader>gl', function()
+          local line = vim.api.nvim_win_get_cursor(0)[1]
+          local blame = gitsigns.get_hunks()[1]
+          if blame then
+            print(vim.inspect(blame))
+          else
+            print("No git information for current line")
+          end
+        end, { desc = 'Show [g]it info for current [l]ine' })
       end,
     },
   },
