@@ -80,7 +80,7 @@ vim.opt.laststatus = 3
 vim.o.inccommand = 'split'
 
 -- Show which line your cursor is on
-vim.o.cursorline = true
+vim.o.cursorline = false
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
@@ -93,7 +93,7 @@ vim.o.confirm = true
 -- LazyVim-inspired defaults
 vim.opt.autowrite = true -- Enable auto write
 vim.opt.confirm = true -- Confirm to save changes before exiting modified buffer
-vim.opt.cursorline = true -- Enable highlighting of the current line
+vim.opt.cursorline = false -- Disable highlighting of the current line
 vim.opt.grepformat = "%f:%l:%c:%m"
 vim.opt.grepprg = "rg --vimgrep"
 vim.opt.inccommand = "nosplit" -- preview incremental substitute
