@@ -67,9 +67,25 @@ return {
 
       vim.o.laststatus = vim.g.lualine_laststatus
 
+      -- 使用 auto 主题作为基础，它会自动抓取当前 colorscheme 的颜色
+      local custom_theme = require 'lualine.themes.auto'
+
+      local function clear_bg(section)
+        if section then
+          section.bg = 'none'
+        end
+      end
+
+      for _, mode in pairs(custom_theme) do
+        if type(mode) == 'table' then
+          clear_bg(mode.c)
+          clear_bg(mode.x)
+        end
+      end
+
       local opts = {
         options = {
-          theme = 'auto',
+          theme = custom_theme,
           globalstatus = vim.o.laststatus == 3,
           disabled_filetypes = { statusline = { 'dashboard', 'alpha', 'ministarter', 'snacks_dashboard' } },
         },

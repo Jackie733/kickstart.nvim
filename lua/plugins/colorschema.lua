@@ -76,6 +76,11 @@ return {
             BlinkCmpDocBorder = { bg = 'none' },
             BlinkCmpSignatureHelp = { bg = 'none' },
             BlinkCmpSignatureHelpBorder = { bg = 'none' },
+
+            -- 原生 TabLine 透明
+            TabLine = { bg = 'none' },
+            TabLineFill = { bg = 'none' },
+            TabLineSel = { bg = 'none' },
           }
         end,
       }
