@@ -9,7 +9,7 @@ return {
       -- 只保留 LSP 不覆盖的 linter
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
-        python = { 'pylint' },
+        python = { 'ruff' },
       }
 
       -- Create autocommand which carries out the actual linting

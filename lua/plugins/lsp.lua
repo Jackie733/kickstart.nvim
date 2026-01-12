@@ -189,7 +189,7 @@ return {
       -- gopls = {},
       pyright = {},
       -- ruff = {},
-      rust_analyzer = {},
+      -- rust_analyzer = {}, -- Managed by rustaceanvim in lua/plugins/rust.lua
       -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
       --
       -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -234,6 +234,8 @@ return {
     local ensure_installed = vim.tbl_keys(servers or {})
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format Lua code
+      'ruff', -- Python linter/formatter
+      'markdownlint', -- Markdown linter
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -283,9 +285,12 @@ return {
         end,
       },
       before_init = function(_, config)
+        -- 使用 Mason 的标准安装路径，完全避开运行时查询 registry 可能导致的问题
+        local vue_language_server_path = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+
         table.insert(config.settings.vtsls.tsserver.globalPlugins, {
           name = '@vue/typescript-plugin',
-          location = vim.fn.expand '$MASON/packages/vue-language-server/node_modules/@vue/language-server',
+          location = vue_language_server_path,
           languages = { 'vue' },
           configNamespace = 'typescript',
           enableForWorkspaceTypeScriptVersions = true,
@@ -315,7 +320,7 @@ return {
             if vim.fn.isdirectory(project_ts) == 1 then
               return project_ts
             end
-            return vim.fn.expand '$MASON/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
+            return vim.fn.stdpath 'data' .. '/mason/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
           end)(),
         },
       },

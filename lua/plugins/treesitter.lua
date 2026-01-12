@@ -18,6 +18,7 @@ return {
         'query',
         'typescript',
         'javascript',
+        'tsx',
         'rust',
         'vue',
         'python',
