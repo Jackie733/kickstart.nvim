@@ -252,80 +252,40 @@ return {
       input = { enabled = true },
       notifier = { enabled = true },
       scope = { enabled = true },
-      scroll = { enabled = false }, -- 禁用滚动动画以提高性能
-      statuscolumn = { enabled = false }, -- we set this in options.lua
-      -- toggle = { map = LazyVim.safe_keymap_set },
+      scroll = { enabled = false },
+      statuscolumn = { enabled = false },
       words = { enabled = true },
-    },
-    -- stylua: ignore
-    keys = {
-      { "<leader>n", function()
-        if Snacks.config.picker and Snacks.config.picker.enabled then
-          Snacks.picker.notifications()
-        else
-          Snacks.notifier.show_history()
-        end
-      end, desc = "Notification History" },
-      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
-    },
-  },
-  {
-    'goolord/alpha-nvim',
-    event = 'VimEnter',
-    opts = function()
-      local dashboard = require 'alpha.themes.dashboard'
-      local logo = [[
+      dashboard = {
+        enabled = true,
+        preset = {
+          keys = {
+            { icon = ' ', key = 'f', desc = 'Find File', action = ':Telescope find_files' },
+            { icon = ' ', key = 'r', desc = 'Recent Files', action = ':Telescope oldfiles' },
+            { icon = ' ', key = 't', desc = 'Find Text', action = ':Telescope live_grep' },
+            { icon = '󰒲 ', key = 'l', desc = 'Lazy', action = ':Lazy' },
+            { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
+          },
+          header = [[
  ______   ______     __     ______     __   __
 /\__  _\ /\  ___\   /\ \   /\  ___\   /\ "-.\ \
 \/_/\ \/ \ \___  \  \ \ \  \ \  __\   \ \ \-.  \
    \ \_\  \/\_____\  \ \_\  \ \_____\  \ \_\\"\_\
     \/_/   \/_____/   \/_/   \/_____/   \/_/ \/_/
-                                                  ]]
-
-      dashboard.section.header.val = vim.split(logo, '\n')
+                                                   ]],
+        },
+        sections = {
+          { section = 'header' },
+          { section = 'keys', gap = 1, padding = 1 },
+          { section = 'startup' },
+        },
+      },
+    },
     -- stylua: ignore
-    dashboard.section.buttons.val = {
-      dashboard.button( "f", "  > Find file", ":Telescope find_files <CR>"),
-      dashboard.button( "r", "  > Recent"   , ":Telescope oldfiles<CR>"),
-      dashboard.button( "t", "  > Find text", ":Telescope live_grep <CR>"),
-      dashboard.button( "l", "󰒲  > Lazy", ":Lazy<CR>"),
-      dashboard.button( "q", "  > Quit", ":qa<CR>"),
-    }
-      for _, button in ipairs(dashboard.section.buttons.val) do
-        button.opts.hl = 'AlphaButtons'
-        button.opts.hl_shortcut = 'AlphaShortcut'
-      end
-      dashboard.section.header.opts.hl = 'AlphaHeader'
-      dashboard.section.buttons.opts.hl = 'AlphaButtons'
-      dashboard.section.footer.opts.hl = 'AlphaFooter'
-      dashboard.opts.layout[1].val = 8
-      return dashboard
-    end,
-    config = function(_, dashboard)
-      -- close Lazy and re-open when the dashboard is ready
-      if vim.o.filetype == 'lazy' then
-        vim.cmd.close()
-        vim.api.nvim_create_autocmd('User', {
-          once = true,
-          pattern = 'AlphaReady',
-          callback = function()
-            require('lazy').show()
-          end,
-        })
-      end
-
-      require('alpha').setup(dashboard.opts)
-
-      vim.api.nvim_create_autocmd('User', {
-        once = true,
-        pattern = 'LazyDone',
-        callback = function()
-          local stats = require('lazy').stats()
-          local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-          dashboard.section.footer.val = '⚡ Neovim loaded ' .. stats.loaded .. '/' .. stats.count .. ' plugins in ' .. ms .. 'ms'
-          pcall(vim.cmd.AlphaRedraw)
-        end,
-      })
-    end,
+    keys = {
+      { "<leader>n", function()
+        Snacks.notifier.show_history()
+      end, desc = "Notification History" },
+      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+    },
   },
 }

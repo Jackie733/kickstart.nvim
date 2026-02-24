@@ -184,35 +184,88 @@ return {
     --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
     --  - settings (table): Override the default settings passed when initializing the server.
     --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+    -- Helper: 禁用 LSP 格式化（由 conform.nvim 处理）
+    local function disable_formatting(client)
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
+    end
+
     local servers = {
-      -- clangd = {},
-      -- gopls = {},
-      pyright = {},
-      -- ruff = {},
-      -- rust_analyzer = {}, -- Managed by rustaceanvim in lua/plugins/rust.lua
-      -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-      --
-      -- Some languages (like typescript) have entire language plugins that can be useful:
-      --    https://github.com/pmizio/typescript-tools.nvim
-      --
-      -- NOTE: 只使用 vtsls，不需要 ts_ls（两者功能重复，vtsls 更快）
-      -- ts_ls = {},
-      vtsls = {},
-      -- NOTE: vue_ls 提供 Vue SFC 完整支持，配合 vtsls 的 @vue/typescript-plugin 使用
-      vue_ls = {},
+      basedpyright = {},
+      -- rust_analyzer 由 rustaceanvim 管理，见 lua/plugins/rust.lua
       eslint = {},
       tailwindcss = {},
+
+      -- vtsls: 比 ts_ls 更快的 TypeScript LSP
+      vtsls = {
+        filetypes = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue' },
+        settings = {
+          vtsls = {
+            tsserver = { globalPlugins = {} },
+            autoUseWorkspaceTsdk = true,
+          },
+          typescript = {
+            inlayHints = {
+              parameterNames = { enabled = 'literals' },
+              parameterTypes = { enabled = true },
+              variableTypes = { enabled = true },
+              propertyDeclarationTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
+              enumMemberValues = { enabled = true },
+            },
+          },
+        },
+        handlers = {
+          ['workspace/executeCommand'] = function(err, result, ctx, config)
+            if ctx.params and ctx.params.command and ctx.params.command:match 'setContext' then
+              return nil
+            end
+            return vim.lsp.handlers['workspace/executeCommand'](err, result, ctx, config)
+          end,
+        },
+        before_init = function(_, config)
+          local vue_language_server_path = vim.fn.stdpath 'data'
+            .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+          table.insert(config.settings.vtsls.tsserver.globalPlugins, {
+            name = '@vue/typescript-plugin',
+            location = vue_language_server_path,
+            languages = { 'vue' },
+            configNamespace = 'typescript',
+            enableForWorkspaceTypeScriptVersions = true,
+          })
+        end,
+        on_attach = function(client, bufnr)
+          disable_formatting(client)
+          if vim.bo[bufnr].filetype == 'vue' then
+            client.server_capabilities.semanticTokensProvider = nil
+          end
+        end,
+      },
+
+      -- vue_ls: Vue SFC 完整支持，配合 vtsls 的 @vue/typescript-plugin
+      vue_ls = {
+        before_init = function(_, config)
+          -- 动态检测项目本地 TypeScript，切换项目后仍能正确识别
+          local project_ts = (config.root_dir or vim.fn.getcwd()) .. '/node_modules/typescript/lib'
+          local tsdk = project_ts
+          if vim.fn.isdirectory(project_ts) ~= 1 then
+            tsdk = vim.fn.stdpath 'data'
+              .. '/mason/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
+          end
+          config.init_options = config.init_options or {}
+          config.init_options.typescript = { tsdk = tsdk }
+        end,
+        on_attach = function(client)
+          disable_formatting(client)
+        end,
+      },
+
       lua_ls = {
-        -- cmd = { ... },
-        -- filetypes = { ... },
-        -- capabilities = {},
         settings = {
           Lua = {
             completion = {
               callSnippet = 'Replace',
             },
-            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-            -- diagnostics = { disable = { 'missing-fields' } },
           },
         },
       },
@@ -235,6 +288,7 @@ return {
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format Lua code
       'ruff', -- Python linter/formatter
+      'prettierd', -- Fast JS/TS/Vue formatter
       'markdownlint', -- Markdown linter
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -253,82 +307,6 @@ return {
         end,
       },
     }
-
-    vim.lsp.config('vtsls', {
-      filetypes = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue' },
-      settings = {
-        vtsls = {
-          tsserver = { globalPlugins = {} },
-          -- 自动使用项目中的 TypeScript 版本
-          autoUseWorkspaceTsdk = true,
-        },
-        typescript = {
-          inlayHints = {
-            parameterNames = { enabled = 'literals' },
-            parameterTypes = { enabled = true },
-            variableTypes = { enabled = true },
-            propertyDeclarationTypes = { enabled = true },
-            functionLikeReturnTypes = { enabled = true },
-            enumMemberValues = { enabled = true },
-          },
-        },
-      },
-      -- 处理 VS Code 专用命令，避免 "Command setContext not found" 错误
-      handlers = {
-        ['workspace/executeCommand'] = function(err, result, ctx, config)
-          -- 静默忽略 setContext 等 VS Code 专用命令
-          if ctx.params and ctx.params.command and ctx.params.command:match 'setContext' then
-            return nil
-          end
-          -- 其他命令走默认处理
-          return vim.lsp.handlers['workspace/executeCommand'](err, result, ctx, config)
-        end,
-      },
-      before_init = function(_, config)
-        -- 使用 Mason 的标准安装路径，完全避开运行时查询 registry 可能导致的问题
-        local vue_language_server_path = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
-
-        table.insert(config.settings.vtsls.tsserver.globalPlugins, {
-          name = '@vue/typescript-plugin',
-          location = vue_language_server_path,
-          languages = { 'vue' },
-          configNamespace = 'typescript',
-          enableForWorkspaceTypeScriptVersions = true,
-        })
-      end,
-      on_attach = function(client)
-        client.server_capabilities.documentFormattingProvider = false
-        client.server_capabilities.documentRangeFormattingProvider = false
-        -- Vue 文件中禁用 vtsls 的语义高亮，由 vue_ls 提供
-        if vim.bo.filetype == 'vue' then
-          client.server_capabilities.semanticTokensProvider = nil
-        end
-      end,
-    })
-
-    -- Vue Language Server 配置
-    -- 参考: https://github.com/vuejs/language-tools/wiki/Neovim
-    -- 注意：最新的 nvim-lspconfig 已内置 tsserver/request 转发，不需要手动配置 on_init
-    vim.lsp.config('vue_ls', {
-      -- init_options 用于配置 vue_ls 使用的 TypeScript 版本
-      -- 不需要手动设置 hybridMode，它由 @vue/typescript-plugin 自动处理
-      init_options = {
-        typescript = {
-          -- 优先使用项目本地的 TypeScript，回退到 Mason 安装的版本
-          tsdk = (function()
-            local project_ts = vim.fn.getcwd() .. '/node_modules/typescript/lib'
-            if vim.fn.isdirectory(project_ts) == 1 then
-              return project_ts
-            end
-            return vim.fn.stdpath 'data' .. '/mason/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
-          end)(),
-        },
-      },
-      on_attach = function(client)
-        client.server_capabilities.documentFormattingProvider = false
-        client.server_capabilities.documentRangeFormattingProvider = false
-      end,
-    })
 
     -- 自定义 Vue 组件高亮（从 vue-language-tools 3.0.2+ 开始需要）
     vim.api.nvim_set_hl(0, '@lsp.type.component.vue', { link = '@type' })

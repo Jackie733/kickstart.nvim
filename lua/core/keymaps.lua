@@ -76,14 +76,14 @@ if vim.fn.executable 'lazygit' == 1 then
     Snacks.lazygit()
   end, { desc = 'Lazygit (cwd)' })
   map('n', '<leader>gf', function()
-    Snacks.picker.git_log_file()
+    require('telescope.builtin').git_bcommits()
   end, { desc = 'Git Current File History' })
   map('n', '<leader>gL', function()
-    Snacks.picker.git_log()
+    require('telescope.builtin').git_commits()
   end, { desc = 'Git Log (cwd)' })
 end
 map('n', '<leader>gb', function()
-  Snacks.picker.git_log_line()
+  require('telescope.builtin').git_bcommits { current_line = true }
 end, { desc = 'Git Blame Line' })
 map({ 'n', 'x' }, '<leader>gB', function()
   Snacks.gitbrowse()

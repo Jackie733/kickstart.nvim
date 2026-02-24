@@ -137,12 +137,26 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
+    -- Python DAP 配置
+    dap.adapters.python = function(cb, config)
+      cb {
+        type = 'executable',
+        command = 'debugpy-adapter',
+      }
+    end
+    dap.configurations.python = {
+      {
+        type = 'python',
+        request = 'launch',
+        name = 'Launch file',
+        program = '${file}',
+        pythonPath = function()
+          local venv = os.getenv 'VIRTUAL_ENV'
+          if venv then
+            return venv .. '/bin/python'
+          end
+          return 'python3'
+        end,
       },
     }
   end,

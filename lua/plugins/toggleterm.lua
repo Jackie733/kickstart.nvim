@@ -1,6 +1,11 @@
 return {
   'akinsho/toggleterm.nvim',
   version = '*',
+  keys = {
+    { '<c-\\>', desc = 'Toggle Terminal' },
+    { '<leader>tf', desc = 'ToggleTerm: Bottom Float' },
+  },
+  cmd = { 'ToggleTerm', 'TermExec' },
   config = function()
     require('toggleterm').setup {
       -- 大小可以是一个数字（表示行数/列数），也可以是一个0-1之间的小数（表示占屏幕的比例）
