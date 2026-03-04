@@ -35,6 +35,32 @@ External Requirements:
   - If you want to write Golang, you will need `go`
   - etc.
 
+### Optional: Jupyter Workflow Dependencies
+
+This config includes `jupytext.nvim` + `molten-nvim` for `.ipynb` editing and execution.
+
+- Required CLI/packages:
+  - `jupytext` (`pip install jupytext`)
+  - `pynvim` and `jupyter_client` (`pip install pynvim jupyter_client`)
+- Recommended:
+  - a Jupyter kernel such as `ipykernel` (`pip install ipykernel`)
+
+After first install/update, run:
+
+```vim
+:Lazy sync
+:checkhealth
+```
+
+Main keymaps (normal mode):
+
+- `<leader>ji`: init kernel (`:MoltenInit`)
+- `<leader>je`: evaluate operator (`:MoltenEvaluateOperator`)
+- `<leader>jl`: evaluate current line
+- `<leader>jr`: re-evaluate current cell
+- `<leader>jo`: open output window
+- `<leader>jh`: hide output window
+
 > [!NOTE]
 > See [Install Recipes](#Install-Recipes) for additional Windows and Linux specific notes
 > and quick install snippets
