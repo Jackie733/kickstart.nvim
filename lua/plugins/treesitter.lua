@@ -1,9 +1,11 @@
 return {
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    lazy = false,
     build = ':TSUpdate',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
+      install_dir = vim.fn.stdpath 'data' .. '/site',
       ensure_installed = {
         'bash',
         'c',
@@ -45,9 +47,18 @@ return {
     },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+      local ts = require 'nvim-treesitter'
+      local ts_config = require 'nvim-treesitter.config'
+      local get_install_dir = ts_config.get_install_dir
 
       ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter').setup(opts)
+      ts.setup(opts)
+
+      -- nvim-treesitter's health check compares the raw install path against a
+      -- normalized runtimepath entry, so normalize here to avoid a false error.
+      ts_config.get_install_dir = function(dir_name)
+        return vim.fs.normalize(get_install_dir(dir_name))
+      end
     end,
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
