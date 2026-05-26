@@ -2,54 +2,48 @@ return {
   {
     'mrcjkb/rustaceanvim',
     version = '^5',
-    ft = { 'rust' },
-    config = function()
+    lazy = false,
+    init = function()
       vim.g.rustaceanvim = {
-        -- Plugin configuration
-        tools = {
-        },
-        -- LSP configuration
+        tools = {},
         server = {
-          on_attach = function(client, bufnr)
-            -- Register keymaps
+          on_attach = function(_, bufnr)
             local map = function(keys, func, desc)
               vim.keymap.set('n', keys, func, { buffer = bufnr, desc = 'Rust: ' .. desc })
             end
-            
-            map('<leader>ca', function() vim.cmd.RustLsp('codeAction') end, 'Code Action')
-            map('<leader>dr', function() vim.cmd.RustLsp('debuggables') end, 'Debug Runnables')
+
+            map('<leader>ca', function()
+              vim.cmd.RustLsp 'codeAction'
+            end, 'Code Action')
+            map('<leader>dr', function()
+              vim.cmd.RustLsp 'debuggables'
+            end, 'Debug Runnables')
           end,
           default_settings = {
-            -- rust-analyzer language server configuration
             ['rust-analyzer'] = {
               cargo = {
                 allFeatures = true,
                 loadOutDirsFromCheck = true,
-                buildScripts = {
-                  enable = true,
-                },
+                buildScripts = { enable = true },
               },
-              -- Add clippy lints for Rust
               checkOnSave = {
                 allFeatures = true,
-                command = "clippy",
-                extraArgs = { "--no-deps" },
+                command = 'clippy',
+                extraArgs = { '--no-deps' },
               },
               procMacro = {
                 enable = true,
                 ignored = {
-                  ["async-trait"] = { "async_trait" },
-                  ["napi-derive"] = { "napi" },
-                  ["async-recursion"] = { "async_recursion" },
+                  ['async-trait'] = { 'async_trait' },
+                  ['napi-derive'] = { 'napi' },
+                  ['async-recursion'] = { 'async_recursion' },
                 },
               },
             },
           },
         },
-        -- DAP configuration
-        dap = {
-        },
+        dap = {},
       }
-    end
+    end,
   },
 }

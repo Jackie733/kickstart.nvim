@@ -92,10 +92,9 @@ return {
       -- You'll need to check that you have the required things installed
       -- online, please don't ask me how to install them :)
       ensure_installed = {
-        -- Update this to ensure that you have the debuggers for the langs you want
         'python',
         'js',
-        'chrome',
+        'codelldb',
       },
     }
 
@@ -120,6 +119,49 @@ return {
         },
       },
     }
+
+    for _, adapter in ipairs { 'pwa-node', 'pwa-chrome' } do
+      dap.adapters[adapter] = {
+        type = 'server',
+        host = 'localhost',
+        port = '${port}',
+        executable = {
+          command = 'js-debug-adapter',
+          args = { '${port}' },
+        },
+      }
+    end
+
+    dap.adapters.node = function(callback, config)
+      config.type = 'pwa-node'
+      callback(dap.adapters['pwa-node'])
+    end
+
+    local js_filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue' }
+    for _, language in ipairs(js_filetypes) do
+      dap.configurations[language] = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+          sourceMaps = true,
+          runtimeExecutable = language:find 'typescript' and (vim.fn.executable 'tsx' == 1 and 'tsx' or 'ts-node') or nil,
+          skipFiles = { '<node_internals>/**', 'node_modules/**' },
+          resolveSourceMapLocations = { '${workspaceFolder}/**', '!**/node_modules/**' },
+        },
+        {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Attach process',
+          processId = require('dap.utils').pick_process,
+          cwd = '${workspaceFolder}',
+          sourceMaps = true,
+          skipFiles = { '<node_internals>/**', 'node_modules/**' },
+        },
+      }
+    end
 
     -- Change breakpoint icons
     -- vim.api.nvim_set_hl(0, 'DapBreak', { fg = '#e51400' })
