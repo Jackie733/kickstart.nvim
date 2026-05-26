@@ -75,6 +75,7 @@ vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.opt.laststatus = 3
+vim.o.winborder = 'rounded'
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'nosplit' -- preview incremental substitute
@@ -103,4 +104,3 @@ vim.opt.virtualedit = 'block' -- Allow cursor to move where there is no text in 
 vim.opt.wildmode = 'longest:full,full' -- Command-line completion mode
 vim.opt.winminwidth = 5 -- Minimum window width
 vim.opt.wrap = false -- Disable line wrap
-
