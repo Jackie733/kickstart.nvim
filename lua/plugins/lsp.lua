@@ -168,7 +168,18 @@ return {
           format = false,
         },
       },
-      tailwindcss = {},
+      tailwindcss = {
+        filetypes = {
+          'html',
+          'css',
+          'scss',
+          'javascript',
+          'javascriptreact',
+          'typescript',
+          'typescriptreact',
+          'vue',
+        },
+      },
       basedpyright = {},
       ruff = {
         init_options = {
