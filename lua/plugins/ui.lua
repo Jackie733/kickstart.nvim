@@ -255,6 +255,8 @@ return {
       scroll = { enabled = false },
       statuscolumn = { enabled = false },
       words = { enabled = true },
+      bigfile = { enabled = true },
+      quickfile = { enabled = true },
       dashboard = {
         enabled = true,
         preset = {
