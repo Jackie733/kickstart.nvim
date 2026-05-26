@@ -1,156 +1,73 @@
 return {
-  -- Main LSP Configuration
   'neovim/nvim-lspconfig',
   dependencies = {
-    -- Automatically install LSPs and related tools to stdpath for Neovim
-    -- Mason must be loaded before its dependents so we need to set it up here.
-    -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
     { 'mason-org/mason.nvim', opts = {} },
     'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-    -- Allows extra capabilities provided by blink.cmp
     'saghen/blink.cmp',
   },
   config = function()
-    -- Brief aside: **What is LSP?**
-    --
-    -- LSP is an initialism you've probably heard, but might not understand what it is.
-    --
-    -- LSP stands for Language Server Protocol. It's a protocol that helps editors
-    -- and language tooling communicate in a standardized fashion.
-    --
-    -- In general, you have a "server" which is some tool built to understand a particular
-    -- language (such as `gopls`, `lua_ls`, `rust_analyzer`, etc.). These Language Servers
-    -- (sometimes called LSP servers, but that's kind of like ATM Machine) are standalone
-    -- processes that communicate with some "client" - in this case, Neovim!
-    --
-    -- LSP provides Neovim with features like:
-    --  - Go to definition
-    --  - Find references
-    --  - Autocompletion
-    --  - Symbol Search
-    --  - and more!
-    --
-    -- Thus, Language Servers are external tools that must be installed separately from
-    -- Neovim. This is where `mason` and related plugins come into play.
-    --
-    -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
-    -- and elegantly composed help section, `:help lsp-vs-treesitter`
+    local function map_lsp(event, keys, func, desc, mode)
+      mode = mode or 'n'
+      vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
+    end
 
-    --  This function gets run when an LSP attaches to a particular buffer.
-    --    That is to say, every time a new file is opened that is associated with
-    --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
-    --    function will be executed to configure the current buffer
+    local function client_supports_method(client, method, bufnr)
+      if vim.fn.has 'nvim-0.11' == 1 then
+        return client:supports_method(method, bufnr)
+      end
+      return client.supports_method(method, { bufnr = bufnr })
+    end
+
+    local function disable_formatting(client)
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
+    end
+
     vim.api.nvim_create_autocmd('LspAttach', {
-      group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+      group = vim.api.nvim_create_augroup('tsien-lsp-attach', { clear = true }),
       callback = function(event)
-        -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-        -- to define small helper and utility functions so you don't have to repeat yourself.
-        --
-        -- In this case, we create a function that lets us more easily define mappings specific
-        -- for LSP related items. It sets the mode, buffer and description for us each time.
-        local map = function(keys, func, desc, mode)
-          mode = mode or 'n'
-          vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
-        end
+        map_lsp(event, '<leader>cr', vim.lsp.buf.rename, '[C]ode [R]ename')
+        map_lsp(event, '<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+        map_lsp(event, 'gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+        map_lsp(event, 'gd', require('telescope.builtin').lsp_definitions, '[G]oto [d]efinition')
+        map_lsp(event, 'gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+        map_lsp(event, 'gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+        map_lsp(event, 'gy', require('telescope.builtin').lsp_type_definitions, '[G]oto T[y]pe Definition')
+        map_lsp(event, '<leader>cs', require('telescope.builtin').lsp_document_symbols, '[C]ode [S]ymbols')
+        map_lsp(event, '<leader>cS', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[C]ode Workspace [S]ymbols')
+        map_lsp(event, 'K', vim.lsp.buf.hover, 'Hover Documentation')
 
-        -- Rename the variable under your cursor.
-        --  Most Language Servers support renaming across files, etc.
-        map('<leader>cr', vim.lsp.buf.rename, '[C]ode [R]ename')
-
-        -- Execute a code action, usually your cursor needs to be on top of an error
-        -- or a suggestion from your LSP for this to activate.
-        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-
-        -- WARN: This is not Goto Definition, this is Goto Declaration.
-        --  For example, in C this would take you to the header.
-        map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-
-        -- Jump to the definition of the word under your cursor.
-        --  This is where a variable was first declared, or where a function is defined, etc.
-        --  To jump back, press <C-t>.
-        map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [d]efinition')
-
-        -- Find references for the word under your cursor.
-        map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
-        -- Jump to the implementation of the word under your cursor.
-        --  Useful when your language has ways of declaring types without an actual implementation.
-        map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-
-        -- Jump to the type of the word under your cursor.
-        --  Useful when you're not sure what type a variable is and you want to see
-        --  the definition of its *type*, not where it was *defined*.
-        map('gy', require('telescope.builtin').lsp_type_definitions, '[G]oto T[y]pe Definition')
-
-        -- Fuzzy find all the symbols in your current document.
-        --  Symbols are things like variables, functions, types, etc.
-        map('<leader>cs', require('telescope.builtin').lsp_document_symbols, '[C]ode [S]ymbols')
-
-        -- Fuzzy find all the symbols in your current workspace.
-        --  Similar to document symbols, except searches over your entire project.
-        map('<leader>cS', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[C]ode Workspace [S]ymbols')
-
-        -- See `:help K` for why this keymap.
-        map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-        -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
-        ---@param client vim.lsp.Client
-        ---@param method vim.lsp.protocol.Method
-        ---@param bufnr? integer some lsp support methods only in specific files
-        ---@return boolean
-        local function client_supports_method(client, method, bufnr)
-          if vim.fn.has 'nvim-0.11' == 1 then
-            return client:supports_method(method, bufnr)
-          else
-            return client.supports_method(method, { bufnr = bufnr })
-          end
-        end
-
-        -- The following two autocommands are used to highlight references of the
-        -- word under your cursor when your cursor rests there for a little while.
-        --    See `:help CursorHold` for information about when this is executed
-        --
-        -- When you move your cursor, the highlights will be cleared (the second autocommand).
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
-          local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
+          local highlight_group = vim.api.nvim_create_augroup('tsien-lsp-highlight', { clear = false })
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
             buffer = event.buf,
-            group = highlight_augroup,
+            group = highlight_group,
             callback = vim.lsp.buf.document_highlight,
           })
-
           vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
             buffer = event.buf,
-            group = highlight_augroup,
+            group = highlight_group,
             callback = vim.lsp.buf.clear_references,
           })
-
           vim.api.nvim_create_autocmd('LspDetach', {
-            group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-            callback = function(event2)
+            group = vim.api.nvim_create_augroup('tsien-lsp-detach', { clear = true }),
+            callback = function(detach_event)
               vim.lsp.buf.clear_references()
-              vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
+              vim.api.nvim_clear_autocmds { group = 'tsien-lsp-highlight', buffer = detach_event.buf }
             end,
           })
         end
 
-        -- The following code creates a keymap to toggle inlay hints in your
-        -- code, if the language server you are using supports them
-        --
-        -- This may be unwanted, since they displace some of your code
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-          map('<leader>th', function()
+          map_lsp(event, '<leader>th', function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
           end, '[T]oggle Inlay [H]ints')
         end
       end,
     })
 
-    -- Diagnostic Config
-    -- See :help vim.diagnostic.Opts
     vim.diagnostic.config {
       severity_sort = true,
       float = { border = 'rounded', source = 'if_many' },
@@ -169,71 +86,61 @@ return {
       },
     }
 
-    -- LSP servers and clients are able to communicate to each other what features they support.
-    --  By default, Neovim doesn't support everything that is in the LSP specification.
-    --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
-    --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
     local capabilities = require('blink.cmp').get_lsp_capabilities()
+    local vue_language_server_path = vim.fn.stdpath 'data'
+      .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
 
-    -- Enable the following language servers
-    --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-    --
-    --  Add any additional override configuration in the following tables. Available keys are:
-    --  - cmd (table): Override the default command used to start the server
-    --  - filetypes (table): Override the default list of associated filetypes for the server
-    --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-    --  - settings (table): Override the default settings passed when initializing the server.
-    --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-    -- Helper: 禁用 LSP 格式化（由 conform.nvim 处理）
-    local function disable_formatting(client)
-      client.server_capabilities.documentFormattingProvider = false
-      client.server_capabilities.documentRangeFormattingProvider = false
-    end
+    local ts_inlay_hints = {
+      enumMemberValues = { enabled = true },
+      functionLikeReturnTypes = { enabled = true },
+      parameterNames = { enabled = 'literals' },
+      parameterTypes = { enabled = true },
+      propertyDeclarationTypes = { enabled = true },
+      variableTypes = { enabled = false },
+    }
 
     local servers = {
-      basedpyright = {},
-      -- rust_analyzer 由 rustaceanvim 管理，见 lua/plugins/rust.lua
-      eslint = {},
-      tailwindcss = {},
-
-      -- vtsls: 比 ts_ls 更快的 TypeScript LSP
-      vtsls = {
-        filetypes = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue' },
+      lua_ls = {
         settings = {
-          vtsls = {
-            tsserver = { globalPlugins = {} },
-            autoUseWorkspaceTsdk = true,
+          Lua = {
+            completion = { callSnippet = 'Replace' },
           },
-          typescript = {
-            inlayHints = {
-              parameterNames = { enabled = 'literals' },
-              parameterTypes = { enabled = true },
-              variableTypes = { enabled = true },
-              propertyDeclarationTypes = { enabled = true },
-              functionLikeReturnTypes = { enabled = true },
-              enumMemberValues = { enabled = true },
+        },
+      },
+      vtsls = {
+        filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue' },
+        settings = {
+          complete_function_calls = true,
+          vtsls = {
+            autoUseWorkspaceTsdk = true,
+            enableMoveToFileCodeAction = true,
+            experimental = {
+              maxInlayHintLength = 30,
+              completion = { enableServerSideFuzzyMatch = true },
+            },
+            tsserver = {
+              globalPlugins = {
+                {
+                  name = '@vue/typescript-plugin',
+                  location = vue_language_server_path,
+                  languages = { 'vue' },
+                  configNamespace = 'typescript',
+                  enableForWorkspaceTypeScriptVersions = true,
+                },
+              },
             },
           },
+          typescript = {
+            updateImportsOnFileMove = { enabled = 'always' },
+            suggest = { completeFunctionCalls = true },
+            inlayHints = ts_inlay_hints,
+          },
+          javascript = {
+            updateImportsOnFileMove = { enabled = 'always' },
+            suggest = { completeFunctionCalls = true },
+            inlayHints = ts_inlay_hints,
+          },
         },
-        handlers = {
-          ['workspace/executeCommand'] = function(err, result, ctx, config)
-            if ctx.params and ctx.params.command and ctx.params.command:match 'setContext' then
-              return nil
-            end
-            return vim.lsp.handlers['workspace/executeCommand'](err, result, ctx, config)
-          end,
-        },
-        before_init = function(_, config)
-          local vue_language_server_path = vim.fn.stdpath 'data'
-            .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
-          table.insert(config.settings.vtsls.tsserver.globalPlugins, {
-            name = '@vue/typescript-plugin',
-            location = vue_language_server_path,
-            languages = { 'vue' },
-            configNamespace = 'typescript',
-            enableForWorkspaceTypeScriptVersions = true,
-          })
-        end,
         on_attach = function(client, bufnr)
           disable_formatting(client)
           if vim.bo[bufnr].filetype == 'vue' then
@@ -241,74 +148,66 @@ return {
           end
         end,
       },
-
-      -- vue_ls: Vue SFC 完整支持，配合 vtsls 的 @vue/typescript-plugin
       vue_ls = {
         before_init = function(_, config)
-          -- 动态检测项目本地 TypeScript，切换项目后仍能正确识别
-          local project_ts = (config.root_dir or vim.fn.getcwd()) .. '/node_modules/typescript/lib'
-          local tsdk = project_ts
-          if vim.fn.isdirectory(project_ts) ~= 1 then
-            tsdk = vim.fn.stdpath 'data'
-              .. '/mason/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
-          end
-          config.init_options = config.init_options or {}
-          config.init_options.typescript = { tsdk = tsdk }
-        end,
-        on_attach = function(client)
-          disable_formatting(client)
-        end,
-      },
+          local root = type(config.root_dir) == 'string' and config.root_dir or vim.fn.getcwd()
+          local project_tsdk = root .. '/node_modules/typescript/lib'
+          local fallback_tsdk = vim.fn.stdpath 'data'
+            .. '/mason/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
 
-      lua_ls = {
+          config.init_options = config.init_options or {}
+          config.init_options.typescript = {
+            tsdk = vim.fn.isdirectory(project_tsdk) == 1 and project_tsdk or fallback_tsdk,
+          }
+        end,
+        on_attach = disable_formatting,
+      },
+      eslint = {
         settings = {
-          Lua = {
-            completion = {
-              callSnippet = 'Replace',
-            },
-          },
+          workingDirectory = { mode = 'auto' },
+          format = false,
         },
       },
-    }
-
-    -- Ensure the servers and tools above are installed
-    --
-    -- To check the current status of installed tools and/or manually install
-    -- other tools, you can run
-    --    :Mason
-    --
-    -- You can press `g?` for help in this menu.
-    --
-    -- `mason` had to be setup earlier: to configure its options see the
-    -- `dependencies` table for `nvim-lspconfig` above.
-    --
-    -- You can add other tools here that you want Mason to install
-    -- for you, so that they are available from within Neovim.
-    local ensure_installed = vim.tbl_keys(servers or {})
-    vim.list_extend(ensure_installed, {
-      'stylua', -- Used to format Lua code
-      'ruff', -- Python linter/formatter
-      'prettierd', -- Fast JS/TS/Vue formatter
-      'markdownlint', -- Markdown linter
-    })
-    require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-    require('mason-lspconfig').setup {
-      ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-      automatic_installation = false,
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
-          -- This handles overriding only values explicitly passed
-          -- by the server configuration above. Useful when disabling
-          -- certain features of an LSP (for example, turning off formatting for ts_ls)
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          require('lspconfig')[server_name].setup(server)
+      tailwindcss = {},
+      basedpyright = {},
+      ruff = {
+        init_options = {
+          settings = {
+            logLevel = 'error',
+          },
+        },
+        on_attach = function(client)
+          client.server_capabilities.hoverProvider = false
         end,
       },
     }
 
-    -- 自定义 Vue 组件高亮（从 vue-language-tools 3.0.2+ 开始需要）
+    local server_names = { 'lua_ls', 'vtsls', 'vue_ls', 'eslint', 'tailwindcss', 'basedpyright', 'ruff' }
+    for _, server_name in ipairs(server_names) do
+      local server = servers[server_name]
+      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      vim.lsp.config(server_name, server)
+    end
+
+    require('mason-lspconfig').setup {
+      ensure_installed = server_names,
+      automatic_enable = false,
+    }
+
+    require('mason-tool-installer').setup {
+      ensure_installed = {
+        'stylua',
+        'prettierd',
+        'prettier',
+        'ruff',
+        'markdownlint',
+        'debugpy',
+        'js-debug-adapter',
+        'codelldb',
+      },
+    }
+
+    vim.lsp.enable(server_names)
     vim.api.nvim_set_hl(0, '@lsp.type.component.vue', { link = '@type' })
   end,
 }
