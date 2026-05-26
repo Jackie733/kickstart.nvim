@@ -6,10 +6,9 @@ return {
     config = function()
       local lint = require 'lint'
       -- NOTE: eslint 已通过 LSP 提供，无需在此重复配置
-      -- 只保留 LSP 不覆盖的 linter
+      -- Ruff 也由 LSP 提供，只保留 LSP 不覆盖的 linter
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
-        python = { 'ruff' },
       }
 
       -- Create autocommand which carries out the actual linting
