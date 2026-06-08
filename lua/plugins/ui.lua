@@ -363,6 +363,12 @@ return {
       words = { enabled = true },
       bigfile = { enabled = true },
       quickfile = { enabled = true },
+      lazygit = {
+        win = {
+          width = 0.98,
+          height = 0.98,
+        },
+      },
       dashboard = {
         enabled = true,
         preset = {
