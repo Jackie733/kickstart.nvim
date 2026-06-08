@@ -1,3 +1,25 @@
+local function pad_dashboard_header(header)
+  local lines = vim.split(header, '\n', { plain = true })
+
+  if lines[1] == '' then
+    table.remove(lines, 1)
+  end
+  if lines[#lines] == '' then
+    table.remove(lines)
+  end
+
+  local width = 0
+  for _, line in ipairs(lines) do
+    width = math.max(width, vim.api.nvim_strwidth(line))
+  end
+
+  for index, line in ipairs(lines) do
+    lines[index] = line .. (' '):rep(width - vim.api.nvim_strwidth(line))
+  end
+
+  return table.concat(lines, '\n')
+end
+
 return {
   {
     'akinsho/bufferline.nvim',
@@ -352,13 +374,12 @@ return {
             { icon = '󰒲 ', key = 'l', desc = 'Lazy', action = ':Lazy' },
             { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
           },
-          header = [[
+          header = pad_dashboard_header [[
  ______   ______     __     ______     __   __
 /\__  _\ /\  ___\   /\ \   /\  ___\   /\ "-.\ \
 \/_/\ \/ \ \___  \  \ \ \  \ \  __\   \ \ \-.  \
    \ \_\  \/\_____\  \ \_\  \ \_____\  \ \_\\"\_\
-    \/_/   \/_____/   \/_/   \/_____/   \/_/ \/_/
-                                                   ]],
+    \/_/   \/_____/   \/_/   \/_____/   \/_/ \/_/]],
         },
         sections = {
           { section = 'header' },
