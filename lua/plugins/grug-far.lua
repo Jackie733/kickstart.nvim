@@ -3,30 +3,30 @@ return {
   'MagicDuck/grug-far.nvim',
   keys = {
     {
-      '<leader>sr',
+      '<leader>rr',
       function()
         require('grug-far').open()
       end,
-      desc = '[S]earch and [R]eplace',
+      desc = '[R]eplace in project',
     },
     {
-      '<leader>sw',
+      '<leader>rw',
       function()
-        require('grug-far').open({ prefills = { search = vim.fn.expand('<cword>') } })
+        require('grug-far').open { prefills = { search = vim.fn.expand '<cword>' } }
       end,
-      desc = '[S]earch and replace current [W]ord',
+      desc = '[R]eplace current [W]ord',
     },
     {
-      '<leader>sf',
+      '<leader>rf',
       function()
-        require('grug-far').open({ prefills = { paths = vim.fn.expand('%') } })
+        require('grug-far').open { prefills = { paths = vim.fn.expand '%' } }
       end,
       mode = { 'n', 'v' },
-      desc = '[S]earch and replace in current [F]ile',
+      desc = '[R]eplace in current [F]ile',
     },
   },
   config = function()
-    require('grug-far').setup({
+    require('grug-far').setup {
       -- 配置选项
       headerMaxWidth = 80,
       -- 推荐使用 ripgrep 作为搜索引擎
@@ -42,6 +42,6 @@ return {
       icons = {
         enabled = vim.g.have_nerd_font,
       },
-    })
+    }
   end,
 }

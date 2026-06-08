@@ -1,7 +1,8 @@
 return {
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
-    lazy = false,
+    event = { 'BufReadPost', 'BufNewFile' },
+    cmd = { 'TSInstall', 'TSUpdate', 'TSModuleInfo' },
     build = ':TSUpdate',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
@@ -11,19 +12,25 @@ return {
         'c',
         'diff',
         'json',
+        'jsonc',
         'css',
+        'scss',
         'html',
+        'jsdoc',
         'lua',
         'luadoc',
         'markdown',
         'markdown_inline',
         'query',
+        'regex',
         'typescript',
         'javascript',
         'tsx',
         'rust',
+        'toml',
         'vue',
         'python',
+        'yaml',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,

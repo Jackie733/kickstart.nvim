@@ -79,6 +79,17 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        'gzip',
+        'tarPlugin',
+        'tohtml',
+        'tutor',
+        'zipPlugin',
+      },
+    },
+  },
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`

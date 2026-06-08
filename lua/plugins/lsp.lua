@@ -1,9 +1,11 @@
 return {
   'neovim/nvim-lspconfig',
+  event = { 'BufReadPre', 'BufNewFile' },
   dependencies = {
     { 'mason-org/mason.nvim', opts = {} },
     'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
+    'b0o/SchemaStore.nvim',
     'saghen/blink.cmp',
   },
   config = function()
@@ -87,8 +89,7 @@ return {
     }
 
     local capabilities = require('blink.cmp').get_lsp_capabilities()
-    local vue_language_server_path = vim.fn.stdpath 'data'
-      .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+    local vue_language_server_path = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
 
     local ts_inlay_hints = {
       enumMemberValues = { enabled = true },
@@ -152,8 +153,7 @@ return {
         before_init = function(_, config)
           local root = type(config.root_dir) == 'string' and config.root_dir or vim.fn.getcwd()
           local project_tsdk = root .. '/node_modules/typescript/lib'
-          local fallback_tsdk = vim.fn.stdpath 'data'
-            .. '/mason/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
+          local fallback_tsdk = vim.fn.stdpath 'data' .. '/mason/packages/vtsls/node_modules/@vtsls/language-server/node_modules/typescript/lib'
 
           config.init_options = config.init_options or {}
           config.init_options.typescript = {
@@ -180,6 +180,26 @@ return {
           'vue',
         },
       },
+      html = {},
+      cssls = {},
+      jsonls = {
+        settings = {
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      },
+      yamlls = {
+        settings = {
+          yaml = {
+            schemaStore = { enable = false, url = '' },
+            schemas = require('schemastore').yaml.schemas(),
+            validate = true,
+            keyOrdering = false,
+          },
+        },
+      },
       basedpyright = {},
       ruff = {
         init_options = {
@@ -193,7 +213,19 @@ return {
       },
     }
 
-    local server_names = { 'lua_ls', 'vtsls', 'vue_ls', 'eslint', 'tailwindcss', 'basedpyright', 'ruff' }
+    local server_names = {
+      'lua_ls',
+      'vtsls',
+      'vue_ls',
+      'eslint',
+      'tailwindcss',
+      'html',
+      'cssls',
+      'jsonls',
+      'yamlls',
+      'basedpyright',
+      'ruff',
+    }
     for _, server_name in ipairs(server_names) do
       local server = servers[server_name]
       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
@@ -211,6 +243,11 @@ return {
         'prettierd',
         'prettier',
         'ruff',
+        'shfmt',
+        'html-lsp',
+        'css-lsp',
+        'json-lsp',
+        'yaml-language-server',
         'markdownlint',
         'debugpy',
         'js-debug-adapter',

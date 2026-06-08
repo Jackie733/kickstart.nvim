@@ -23,6 +23,13 @@ return {
         right_mouse_command = function(n) Snacks.bufdelete(n) end,
         diagnostics = 'nvim_lsp',
         always_show_bufferline = false,
+        separator_style = { '', '' },
+        indicator = { style = 'none' },
+        max_name_length = 24,
+        max_prefix_length = 18,
+        tab_size = 18,
+        show_buffer_close_icons = false,
+        show_close_icon = false,
         diagnostics_indicator = function(_, _, diag)
           local icons = TsienVim.icons.diagnostics
           local ret = (diag.error and icons.Error .. diag.error .. ' ' or '') .. (diag.warning and icons.Warn .. diag.warning or '')
@@ -42,6 +49,67 @@ return {
         get_element_icon = function(opts)
           return TsienVim.icons.ft[opts.filetype]
         end,
+      },
+      highlights = {
+        fill = { bg = 'none' },
+        background = {
+          fg = { attribute = 'fg', highlight = 'Comment' },
+          bg = 'none',
+        },
+        buffer_visible = {
+          fg = { attribute = 'fg', highlight = 'Normal' },
+          bg = 'none',
+        },
+        buffer_selected = {
+          fg = { attribute = 'fg', highlight = 'Normal' },
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        numbers_selected = {
+          fg = { attribute = 'fg', highlight = 'Normal' },
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        diagnostic_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        hint_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        info_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        warning_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        error_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        modified_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+        },
+        separator = { fg = 'none', bg = 'none' },
+        separator_visible = { fg = 'none', bg = 'none' },
+        separator_selected = {
+          fg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+        },
+        indicator_selected = {
+          fg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+        },
       },
     },
     config = function(_, opts)
@@ -247,6 +315,22 @@ return {
   { 'MunifTanjim/nui.nvim', lazy = true },
   {
     'snacks.nvim',
+    init = function()
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'VeryLazy',
+        callback = function()
+          Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
+          Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
+          Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>ur'
+          Snacks.toggle.line_number():map '<leader>ul'
+          Snacks.toggle.diagnostics():map '<leader>uD'
+          Snacks.toggle.option('conceallevel', { off = 0, on = 2, name = 'Conceal' }):map '<leader>uc'
+          Snacks.toggle.treesitter():map '<leader>uT'
+          Snacks.toggle.inlay_hints():map '<leader>uh'
+          Snacks.toggle.indent():map '<leader>ui'
+        end,
+      })
+    end,
     opts = {
       indent = { enabled = true },
       input = { enabled = true },
@@ -261,11 +345,12 @@ return {
         enabled = true,
         preset = {
           keys = {
-            { icon = ' ', key = 'f', desc = 'Find File', action = ':Telescope find_files' },
-            { icon = ' ', key = 'r', desc = 'Recent Files', action = ':Telescope oldfiles' },
-            { icon = ' ', key = 't', desc = 'Find Text', action = ':Telescope live_grep' },
+            { icon = ' ', key = 'f', desc = 'Find File', action = ':Telescope find_files' },
+            { icon = ' ', key = 'r', desc = 'Recent Files', action = ':Telescope oldfiles' },
+            { icon = '󰈭 ', key = 'g', desc = 'Find Text', action = ':Telescope live_grep' },
+            { icon = ' ', key = 'c', desc = 'Config', action = ':Telescope find_files cwd=' .. vim.fn.stdpath 'config' },
             { icon = '󰒲 ', key = 'l', desc = 'Lazy', action = ':Lazy' },
-            { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
+            { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
           },
           header = [[
  ______   ______     __     ______     __   __

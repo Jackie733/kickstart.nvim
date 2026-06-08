@@ -51,7 +51,9 @@ return {
         map('n', '<leader>hu', gitsigns.undo_stage_hunk, { desc = 'git [u]ndo stage hunk' })
         map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'git [R]eset buffer' })
         map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'git [p]review hunk' })
-        map('n', '<leader>hb', gitsigns.blame_line, { desc = 'git [b]lame line' })
+        map('n', '<leader>hb', function()
+          gitsigns.blame_line { full = true }
+        end, { desc = 'git [b]lame line' })
         map('n', '<leader>hd', gitsigns.diffthis, { desc = 'git [d]iff against index' })
         map('n', '<leader>hD', function()
           gitsigns.diffthis '@'
@@ -59,17 +61,6 @@ return {
         -- Toggles
         map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
         map('n', '<leader>tD', gitsigns.preview_hunk_inline, { desc = '[T]oggle git show [D]eleted' })
-        
-        -- Git blame info for current line
-        map('n', '<leader>gl', function()
-          local line = vim.api.nvim_win_get_cursor(0)[1]
-          local blame = gitsigns.get_hunks()[1]
-          if blame then
-            print(vim.inspect(blame))
-          else
-            print("No git information for current line")
-          end
-        end, { desc = 'Show [g]it info for current [l]ine' })
       end,
     },
   },

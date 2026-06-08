@@ -15,6 +15,14 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 - Optional: `lazygit`
 - Optional: Nerd Font for richer icons
 
+## Feature Overview
+
+- UI: Kanagawa, transparent centralized highlights, Snacks dashboard/toggles, Lualine, Bufferline, Neo-tree, Telescope.
+- Frontend: vtsls, vue_ls, eslint, tailwindcss, html, cssls, jsonls, yamlls, SchemaStore, nvim-ts-autotag, nvim-colorizer.
+- Rust: rustaceanvim, rust-analyzer, clippy, rustfmt, codelldb.
+- Python: basedpyright, ruff, debugpy, Conform formatting.
+- Diagnostics: native LSP diagnostics plus Trouble worklists.
+
 ## Language Support
 
 - React, Vue, TypeScript, JavaScript, and Node.js through `vtsls`, `vue_ls`, `eslint`, `tailwindcss`, `blink.cmp`, and Prettier.
@@ -49,7 +57,7 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 
 ```sh
 nvim --headless '+lua print("CONFIG_LOAD_OK")' '+qa'
-nvim --headless '+checkhealth vim.lsp lazy nvim-treesitter mason' '+w! /tmp/nvim-health.txt' '+qa'
+nvim --headless '+lua require("lazy").load({ plugins = { "mason.nvim", "nvim-treesitter", "nvim-lspconfig" } })' '+checkhealth vim.lsp lazy nvim-treesitter mason' '+w! /tmp/nvim-health.txt' '+qa'
 nvim --headless --startuptime /tmp/nvim-startup.log '+qa'
 ```
 

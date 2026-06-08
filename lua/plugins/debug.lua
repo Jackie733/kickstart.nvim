@@ -160,6 +160,26 @@ return {
           sourceMaps = true,
           skipFiles = { '<node_internals>/**', 'node_modules/**' },
         },
+        {
+          type = 'pwa-chrome',
+          request = 'launch',
+          name = 'Launch Chrome',
+          url = function()
+            return vim.fn.input('URL: ', 'http://localhost:3000')
+          end,
+          webRoot = '${workspaceFolder}',
+          sourceMaps = true,
+          skipFiles = { '<node_internals>/**', 'node_modules/**' },
+        },
+        {
+          type = 'pwa-chrome',
+          request = 'attach',
+          name = 'Attach Chrome',
+          port = 9222,
+          webRoot = '${workspaceFolder}',
+          sourceMaps = true,
+          skipFiles = { '<node_internals>/**', 'node_modules/**' },
+        },
       }
     end
 
