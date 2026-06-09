@@ -104,7 +104,17 @@ return {
           bold = false,
           italic = false,
         },
+        hint_diagnostic_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
         info_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        info_diagnostic_selected = {
           bg = { attribute = 'bg', highlight = 'PmenuSel' },
           bold = false,
           italic = false,
@@ -114,7 +124,17 @@ return {
           bold = false,
           italic = false,
         },
+        warning_diagnostic_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
         error_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        error_diagnostic_selected = {
           bg = { attribute = 'bg', highlight = 'PmenuSel' },
           bold = false,
           italic = false,
