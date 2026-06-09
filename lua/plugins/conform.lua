@@ -1,3 +1,25 @@
+local project = require 'core.project'
+
+local function frontend_formatters(bufnr)
+  if project.has_oxc_tooling(bufnr) then
+    local conform = require 'conform'
+    local formatters = {}
+
+    if project.has_oxlint(bufnr) and conform.get_formatter_info('oxlint', bufnr).available then
+      table.insert(formatters, 'oxlint')
+    end
+    if project.has_oxfmt(bufnr) and conform.get_formatter_info('oxfmt', bufnr).available then
+      table.insert(formatters, 'oxfmt')
+    end
+
+    if #formatters > 0 then
+      return formatters
+    end
+  end
+
+  return { 'prettierd', 'prettier', stop_after_first = true }
+end
+
 return {
   'stevearc/conform.nvim',
   event = { 'BufWritePre' },
@@ -27,11 +49,11 @@ return {
       rust = { 'rustfmt' },
       sh = { 'shfmt' },
       bash = { 'shfmt' },
-      javascript = { 'prettierd', 'prettier', stop_after_first = true },
-      typescript = { 'prettierd', 'prettier', stop_after_first = true },
-      javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
-      typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
-      vue = { 'prettierd', 'prettier', stop_after_first = true },
+      javascript = frontend_formatters,
+      typescript = frontend_formatters,
+      javascriptreact = frontend_formatters,
+      typescriptreact = frontend_formatters,
+      vue = frontend_formatters,
       json = { 'prettierd', 'prettier', stop_after_first = true },
       jsonc = { 'prettierd', 'prettier', stop_after_first = true },
       css = { 'prettierd', 'prettier', stop_after_first = true },
