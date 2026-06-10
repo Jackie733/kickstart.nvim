@@ -142,6 +142,19 @@ return {
         modified_selected = {
           bg = { attribute = 'bg', highlight = 'PmenuSel' },
         },
+        duplicate_selected = {
+          bg = { attribute = 'bg', highlight = 'PmenuSel' },
+          bold = false,
+          italic = false,
+        },
+        duplicate_visible = {
+          bg = 'none',
+          italic = false,
+        },
+        duplicate = {
+          bg = 'none',
+          italic = false,
+        },
         separator = { fg = 'none', bg = 'none' },
         separator_visible = { fg = 'none', bg = 'none' },
         separator_selected = {
