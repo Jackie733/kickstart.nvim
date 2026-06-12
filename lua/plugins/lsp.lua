@@ -26,6 +26,20 @@ return {
       client.server_capabilities.documentRangeFormattingProvider = false
     end
 
+    local semantic_tokens_full_by_client = {}
+    local function set_full_semantic_tokens(client, enabled)
+      local semantic_tokens = client.server_capabilities.semanticTokensProvider
+      if not semantic_tokens then
+        return
+      end
+
+      if semantic_tokens_full_by_client[client.id] == nil then
+        semantic_tokens_full_by_client[client.id] = semantic_tokens.full
+      end
+
+      semantic_tokens.full = enabled and semantic_tokens_full_by_client[client.id] or false
+    end
+
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('tsien-lsp-attach', { clear = true }),
       callback = function(event)
@@ -144,9 +158,7 @@ return {
         },
         on_attach = function(client, bufnr)
           disable_formatting(client)
-          if vim.bo[bufnr].filetype == 'vue' then
-            client.server_capabilities.semanticTokensProvider = nil
-          end
+          set_full_semantic_tokens(client, vim.bo[bufnr].filetype ~= 'vue')
         end,
       },
       vue_ls = {
