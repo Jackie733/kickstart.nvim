@@ -1,14 +1,14 @@
 return {
   {
-    'MeanderingProgrammer/render-markdown.nvim',
-    ft = { 'markdown' },
-    cmd = { 'RenderMarkdown' },
+    'OXY2DEV/markview.nvim',
+    lazy = false,
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
       'echasnovski/mini.icons',
     },
     keys = {
-      { '<leader>um', '<cmd>RenderMarkdown toggle<cr>', desc = 'Toggle [M]arkdown Render' },
+      { '<leader>um', '<cmd>Markview toggle<cr>', desc = 'Toggle [M]arkdown Preview' },
+      { '<leader>uM', '<cmd>Markview splitToggle<cr>', desc = 'Toggle [M]arkdown Split Preview' },
     },
     init = function()
       local markdown_augroup = vim.api.nvim_create_augroup('markdown-local-options', { clear = true })
@@ -23,6 +23,10 @@ return {
         end,
       })
     end,
-    opts = {},
+    opts = {
+      preview = {
+        icon_provider = 'mini',
+      },
+    },
   },
 }
