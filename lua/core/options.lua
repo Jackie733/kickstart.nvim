@@ -76,6 +76,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.opt.laststatus = 3
 vim.o.winborder = 'rounded'
+vim.opt.pumblend = 0
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'nosplit' -- preview incremental substitute

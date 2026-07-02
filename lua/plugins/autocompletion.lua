@@ -82,14 +82,36 @@ return {
       documentation = {
         auto_show = true,
         auto_show_delay_ms = 200,
+        update_delay_ms = 120,
         window = {
+          min_width = 48,
+          max_width = 48,
+          max_height = 12,
+          desired_min_width = 48,
+          desired_min_height = 8,
           border = 'rounded', -- 文档窗口边框
+          winblend = 0,
+          winhighlight = 'Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc',
+          scrollbar = false,
         },
       },
       menu = {
+        min_width = 28,
+        max_height = 8,
         border = 'rounded', -- 补全菜单边框
+        winblend = 0,
+        winhighlight = 'Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None',
+        scrollbar = false,
         draw = {
           columns = { { 'kind_icon' }, { 'label', 'label_description', gap = 1 } },
+          components = {
+            label = {
+              width = { fill = true, max = 36 },
+            },
+            label_description = {
+              width = { max = 20 },
+            },
+          },
         },
       },
     },
@@ -115,6 +137,28 @@ return {
     fuzzy = { implementation = 'prefer_rust_with_warning' },
 
     -- Shows a signature help window while you type arguments for a function
-    signature = { enabled = true },
+    signature = {
+      enabled = true,
+      window = {
+        border = 'rounded',
+        winblend = 0,
+        winhighlight = 'Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder',
+      },
+    },
   },
+  config = function(_, opts)
+    require('blink.cmp').setup(opts)
+
+    vim.api.nvim_create_autocmd('User', {
+      group = vim.api.nvim_create_augroup('tsien-blink-redraw', { clear = true }),
+      pattern = { 'BlinkCmpListSelect', 'BlinkCmpMenuClose', 'BlinkCmpMenuPositionUpdate' },
+      callback = function()
+        vim.schedule(function()
+          if vim.api.nvim_get_mode().mode:match '^[ic]' then
+            vim.cmd 'redraw!'
+          end
+        end)
+      end,
+    })
+  end,
 }
