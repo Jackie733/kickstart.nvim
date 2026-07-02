@@ -73,14 +73,14 @@ return {
         end,
       },
       highlights = {
-        fill = { bg = 'none' },
+        fill = { bg = { attribute = 'bg', highlight = 'Normal' } },
         background = {
           fg = { attribute = 'fg', highlight = 'Comment' },
-          bg = 'none',
+          bg = { attribute = 'bg', highlight = 'Normal' },
         },
         buffer_visible = {
           fg = { attribute = 'fg', highlight = 'Normal' },
-          bg = 'none',
+          bg = { attribute = 'bg', highlight = 'Normal' },
         },
         buffer_selected = {
           fg = { attribute = 'fg', highlight = 'Normal' },
@@ -148,15 +148,21 @@ return {
           italic = false,
         },
         duplicate_visible = {
-          bg = 'none',
+          bg = { attribute = 'bg', highlight = 'Normal' },
           italic = false,
         },
         duplicate = {
-          bg = 'none',
+          bg = { attribute = 'bg', highlight = 'Normal' },
           italic = false,
         },
-        separator = { fg = 'none', bg = 'none' },
-        separator_visible = { fg = 'none', bg = 'none' },
+        separator = {
+          fg = { attribute = 'bg', highlight = 'Normal' },
+          bg = { attribute = 'bg', highlight = 'Normal' },
+        },
+        separator_visible = {
+          fg = { attribute = 'bg', highlight = 'Normal' },
+          bg = { attribute = 'bg', highlight = 'Normal' },
+        },
         separator_selected = {
           fg = { attribute = 'bg', highlight = 'PmenuSel' },
           bg = { attribute = 'bg', highlight = 'PmenuSel' },
@@ -192,19 +198,6 @@ return {
 
       -- 使用 auto 主题作为基础，它会自动抓取当前 colorscheme 的颜色
       local custom_theme = require 'lualine.themes.auto'
-
-      local function clear_bg(section)
-        if section then
-          section.bg = 'none'
-        end
-      end
-
-      for _, mode in pairs(custom_theme) do
-        if type(mode) == 'table' then
-          clear_bg(mode.c)
-          clear_bg(mode.x)
-        end
-      end
 
       local opts = {
         options = {

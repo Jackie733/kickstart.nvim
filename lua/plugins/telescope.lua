@@ -16,7 +16,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
       '<leader>/',
       function()
         require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 10,
+          winblend = 0,
           previewer = false,
         })
       end,
@@ -90,6 +90,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
         prompt_prefix = '   ',
         selection_caret = ' ',
         entry_prefix = ' ',
+        winblend = 0,
         sorting_strategy = 'ascending',
         layout_strategy = 'horizontal',
         layout_config = {

@@ -1,7 +1,7 @@
 return {
   {
     'windwp/nvim-ts-autotag',
-    event = { 'BufReadPost', 'BufNewFile' },
+    ft = { 'html', 'javascriptreact', 'typescriptreact', 'vue' },
     opts = {
       opts = {
         enable_close = true,
@@ -12,7 +12,14 @@ return {
   },
   {
     'NvChad/nvim-colorizer.lua',
-    event = { 'BufReadPost', 'BufNewFile' },
+    ft = {
+      'css',
+      'scss',
+      'html',
+      'javascriptreact',
+      'typescriptreact',
+      'vue',
+    },
     opts = {
       filetypes = {
         'css',

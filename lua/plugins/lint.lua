@@ -40,20 +40,29 @@ return {
           -- Only run the linter in buffers that you can modify in order to
           -- avoid superfluous noise, notably within the handy LSP pop-ups that
           -- describe the hovered symbol using Markdown.
-          if vim.bo.modifiable then
-            -- 添加延迟，避免阻塞 UI
-            local bufnr = vim.api.nvim_get_current_buf()
-            vim.defer_fn(function()
-              if not vim.api.nvim_buf_is_valid(bufnr) then
-                return
-              end
+          local bufnr = vim.api.nvim_get_current_buf()
+          if not vim.bo[bufnr].modifiable then
+            return
+          end
 
+          local filetype = vim.bo[bufnr].filetype
+          if not lint.linters_by_ft[filetype] and not project.is_frontend_filetype(filetype) then
+            return
+          end
+
+          -- 添加延迟，避免阻塞 UI
+          vim.defer_fn(function()
+            if not vim.api.nvim_buf_is_valid(bufnr) then
+              return
+            end
+
+            if lint.linters_by_ft[vim.bo[bufnr].filetype] then
               vim.api.nvim_buf_call(bufnr, function()
                 lint.try_lint()
               end)
-              try_oxlint(bufnr)
-            end, 100)
-          end
+            end
+            try_oxlint(bufnr)
+          end, 100)
         end,
       })
     end,

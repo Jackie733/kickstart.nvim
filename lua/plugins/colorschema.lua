@@ -5,16 +5,7 @@ return {
     priority = 1000,
     config = function()
       require('kanagawa').setup {
-        transparent = true, -- 启用透明背景
-        colors = {
-          theme = {
-            all = {
-              ui = {
-                bg_gutter = 'none', -- 移除行号区域背景
-              },
-            },
-          },
-        },
+        transparent = false,
         overrides = function(colors)
           return require('core.theme').kanagawa_overrides(colors)
         end,

@@ -1,7 +1,7 @@
 return {
   {
     'OXY2DEV/markview.nvim',
-    lazy = false,
+    ft = { 'markdown', 'markdown.mdx' },
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
       'echasnovski/mini.icons',
@@ -14,7 +14,7 @@ return {
       local markdown_augroup = vim.api.nvim_create_augroup('markdown-local-options', { clear = true })
       vim.api.nvim_create_autocmd('FileType', {
         group = markdown_augroup,
-        pattern = 'markdown',
+        pattern = { 'markdown', 'markdown.mdx' },
         callback = function()
           vim.opt_local.wrap = true
           vim.opt_local.linebreak = true

@@ -28,6 +28,7 @@ local package_sections = {
 }
 
 local package_cache = {}
+local node_bin_cache = {}
 
 local function buf_dir(bufnr)
   local name = vim.api.nvim_buf_get_name(bufnr)
@@ -130,16 +131,27 @@ function M.has_oxc_tooling(bufnr)
 end
 
 function M.find_node_bin(bufnr, name)
-  for _, node_modules in ipairs(vim.fs.find('node_modules', { upward = true, path = buf_dir(bufnr), limit = math.huge })) do
+  local dir = buf_dir(bufnr)
+  local cache_key = dir .. '\0' .. name
+  if node_bin_cache[cache_key] ~= nil then
+    return node_bin_cache[cache_key] or nil
+  end
+
+  local found
+  for _, node_modules in ipairs(vim.fs.find('node_modules', { upward = true, path = dir, limit = math.huge })) do
     local bin = node_modules .. '/.bin/' .. name
     if vim.fn.executable(bin) == 1 then
-      return bin
+      found = bin
+      break
     end
   end
 
-  if vim.fn.executable(name) == 1 then
-    return name
+  if not found and vim.fn.executable(name) == 1 then
+    found = name
   end
+
+  node_bin_cache[cache_key] = found or false
+  return found
 end
 
 return M
