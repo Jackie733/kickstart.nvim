@@ -51,6 +51,9 @@ map('n', '<leader>l', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 -- save file
 map({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save File' })
 
+-- Insert a new line below while staying in insert mode
+map('i', '<C-CR>', '<C-o>o', { desc = 'Insert New Line Below' })
+
 -- Move Lines
 map('n', '<A-j>', "<cmd>execute 'move .+' . v:count1<cr>==", { desc = 'Move Down' })
 map('n', '<A-k>', "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==", { desc = 'Move Up' })

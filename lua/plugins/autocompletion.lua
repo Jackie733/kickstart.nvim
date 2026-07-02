@@ -91,7 +91,7 @@ return {
           desired_min_height = 8,
           border = 'rounded', -- 文档窗口边框
           winblend = 0,
-          winhighlight = 'Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc',
+          winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,EndOfBuffer:NormalFloat',
           scrollbar = false,
         },
       },
@@ -100,7 +100,7 @@ return {
         max_height = 8,
         border = 'rounded', -- 补全菜单边框
         winblend = 0,
-        winhighlight = 'Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None',
+        winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:BlinkCmpMenuSelection,Search:None',
         scrollbar = false,
         draw = {
           columns = { { 'kind_icon' }, { 'label', 'label_description', gap = 1 } },
@@ -142,7 +142,7 @@ return {
       window = {
         border = 'rounded',
         winblend = 0,
-        winhighlight = 'Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder',
+        winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder',
       },
     },
   },
