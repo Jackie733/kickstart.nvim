@@ -20,6 +20,16 @@ local oxlint_markers = {
   'oxlint.config.ts',
 }
 
+local python_root_markers = {
+  'pyrightconfig.json',
+  'pyproject.toml',
+  'setup.py',
+  'setup.cfg',
+  'requirements.txt',
+  'Pipfile',
+  '.git',
+}
+
 local package_sections = {
   'dependencies',
   'devDependencies',
@@ -96,6 +106,30 @@ function M.is_frontend_filetype(filetype)
   return frontend_filetypes[filetype] == true
 end
 
+function M.python_root(bufnr)
+  return root_file(bufnr, python_root_markers)
+end
+
+function M.python_path_for_root(root)
+  if vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV ~= '' then
+    return vim.env.VIRTUAL_ENV .. '/bin/python'
+  end
+
+  root = root or vim.uv.cwd()
+  for _, dirname in ipairs { '.venv', 'venv' } do
+    local python = root .. '/' .. dirname .. '/bin/python'
+    if vim.fn.executable(python) == 1 then
+      return python
+    end
+  end
+
+  return vim.fn.executable 'python3' == 1 and 'python3' or 'python'
+end
+
+function M.python_path(bufnr)
+  return M.python_path_for_root(M.python_root(bufnr) or buf_dir(bufnr))
+end
+
 function M.oxfmt_root(bufnr)
   local root = root_file(bufnr, oxfmt_markers)
   if root then
@@ -105,6 +139,8 @@ function M.oxfmt_root(bufnr)
   if has_package_dependency(bufnr, { 'oxfmt' }) then
     return vim.fs.dirname(package_json(bufnr))
   end
+
+  return nil
 end
 
 function M.oxlint_root(bufnr)
@@ -116,6 +152,8 @@ function M.oxlint_root(bufnr)
   if has_package_dependency(bufnr, { 'oxlint' }) then
     return vim.fs.dirname(package_json(bufnr))
   end
+
+  return nil
 end
 
 function M.has_oxfmt(bufnr)

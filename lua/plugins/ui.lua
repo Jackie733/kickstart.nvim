@@ -72,106 +72,6 @@ return {
           return TsienVim.icons.ft[opts.filetype]
         end,
       },
-      highlights = {
-        fill = { bg = { attribute = 'bg', highlight = 'Normal' } },
-        background = {
-          fg = { attribute = 'fg', highlight = 'Comment' },
-          bg = { attribute = 'bg', highlight = 'Normal' },
-        },
-        buffer_visible = {
-          fg = { attribute = 'fg', highlight = 'Normal' },
-          bg = { attribute = 'bg', highlight = 'Normal' },
-        },
-        buffer_selected = {
-          fg = { attribute = 'fg', highlight = 'Normal' },
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        numbers_selected = {
-          fg = { attribute = 'fg', highlight = 'Normal' },
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        diagnostic_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        hint_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        hint_diagnostic_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        info_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        info_diagnostic_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        warning_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        warning_diagnostic_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        error_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        error_diagnostic_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        modified_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-        },
-        duplicate_selected = {
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bold = false,
-          italic = false,
-        },
-        duplicate_visible = {
-          bg = { attribute = 'bg', highlight = 'Normal' },
-          italic = false,
-        },
-        duplicate = {
-          bg = { attribute = 'bg', highlight = 'Normal' },
-          italic = false,
-        },
-        separator = {
-          fg = { attribute = 'bg', highlight = 'Normal' },
-          bg = { attribute = 'bg', highlight = 'Normal' },
-        },
-        separator_visible = {
-          fg = { attribute = 'bg', highlight = 'Normal' },
-          bg = { attribute = 'bg', highlight = 'Normal' },
-        },
-        separator_selected = {
-          fg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-        },
-        indicator_selected = {
-          fg = { attribute = 'bg', highlight = 'PmenuSel' },
-          bg = { attribute = 'bg', highlight = 'PmenuSel' },
-        },
-      },
     },
     config = function(_, opts)
       require('bufferline').setup(opts)
@@ -271,26 +171,6 @@ return {
         },
         extensions = { 'neo-tree', 'lazy', 'fzf' },
       }
-
-      -- do not add trouble symbols if aerial is enabled
-      -- And allow it to be overriden for some buffer types (see autocmds)
-      -- if vim.g.trouble_lualine and LazyVim.has 'trouble.nvim' then
-      --   local trouble = require 'trouble'
-      --   local symbols = trouble.statusline {
-      --     mode = 'symbols',
-      --     groups = {},
-      --     title = false,
-      --     filter = { range = true },
-      --     format = '{kind_icon}{symbol.name:Normal}',
-      --     hl_group = 'lualine_c_normal',
-      --   }
-      --   table.insert(opts.sections.lualine_c, {
-      --     symbols and symbols.get,
-      --     cond = function()
-      --       return vim.b.trouble_lualine ~= false and symbols.has()
-      --     end,
-      --   })
-      -- end
 
       return opts
     end,

@@ -9,9 +9,52 @@ return {
     'saghen/blink.cmp',
   },
   config = function()
+    local project = require 'core.project'
+
     local function map_lsp(event, keys, func, desc, mode)
       mode = mode or 'n'
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
+    end
+
+    local function root_dir(root_fn)
+      return function(bufnr, on_dir)
+        local root = root_fn(bufnr)
+        if root then
+          on_dir(root)
+        else
+          on_dir(vim.fn.getcwd())
+        end
+      end
+    end
+
+    local function ts_source_action(kinds)
+      kinds = type(kinds) == 'table' and kinds or { kinds }
+      vim.lsp.buf.code_action {
+        apply = true,
+        context = {
+          only = kinds,
+          diagnostics = {},
+        },
+      }
+    end
+
+    local function ts_go_to_source_definition(client, bufnr)
+      local params = vim.lsp.util.make_position_params(vim.api.nvim_get_current_win(), client.offset_encoding)
+      client:exec_cmd({
+        command = '_typescript.goToSourceDefinition',
+        title = 'Go to source definition',
+        arguments = { params.textDocument.uri, params.position },
+      }, { bufnr = bufnr }, function(err, result)
+        if err then
+          vim.notify('Go to source definition failed: ' .. err.message, vim.log.levels.ERROR)
+          return
+        end
+        if not result or vim.tbl_isempty(result) then
+          vim.notify('No source definition found', vim.log.levels.INFO)
+          return
+        end
+        vim.lsp.util.show_document(result[1], client.offset_encoding, { focus = true })
+      end)
     end
 
     local function client_supports_method(client, method, bufnr)
@@ -55,6 +98,21 @@ return {
         map_lsp(event, 'K', vim.lsp.buf.hover, 'Hover Documentation')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
+        if client and client.name == 'vtsls' then
+          map_lsp(event, '<leader>co', function()
+            ts_source_action { 'source.organizeImports', 'source.organizeImports.ts' }
+          end, '[C]ode [O]rganize Imports')
+          map_lsp(event, '<leader>cU', function()
+            ts_source_action { 'source.removeUnused', 'source.removeUnused.ts' }
+          end, '[C]ode Remove [U]nused')
+          map_lsp(event, '<leader>cF', function()
+            ts_source_action { 'source.fixAll', 'source.fixAll.ts' }
+          end, '[C]ode [F]ix All')
+          map_lsp(event, 'gS', function()
+            ts_go_to_source_definition(client, event.buf)
+          end, '[G]oto [S]ource Definition')
+        end
+
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
           local highlight_group = vim.api.nvim_create_augroup('tsien-lsp-highlight', { clear = false })
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -191,6 +249,25 @@ return {
           'typescriptreact',
           'vue',
         },
+        settings = {
+          tailwindCSS = {
+            includeLanguages = {
+              html = 'html',
+              javascript = 'javascript',
+              javascriptreact = 'javascriptreact',
+              typescript = 'typescript',
+              typescriptreact = 'typescriptreact',
+              vue = 'html',
+            },
+            experimental = {
+              classRegex = {
+                { [[(?:cn|clsx|classNames|twMerge)\(([^)]*)\)]], [["'`]([^"'`]*).*?["'`]] },
+                { [[cva\(([^)]*)\)]], [["'`]([^"'`]*).*?["'`]] },
+                { [[tv\(([^)]*)\)]], [["'`]([^"'`]*).*?["'`]] },
+              },
+            },
+          },
+        },
       },
       html = {},
       cssls = {},
@@ -212,8 +289,18 @@ return {
           },
         },
       },
-      basedpyright = {},
+      basedpyright = {
+        root_dir = root_dir(project.python_root),
+        before_init = function(_, config)
+          local root = type(config.root_dir) == 'string' and config.root_dir or vim.fn.getcwd()
+          config.settings = config.settings or {}
+          config.settings.python = vim.tbl_deep_extend('force', config.settings.python or {}, {
+            pythonPath = project.python_path_for_root(root),
+          })
+        end,
+      },
       ruff = {
+        root_dir = root_dir(project.python_root),
         init_options = {
           settings = {
             logLevel = 'error',
