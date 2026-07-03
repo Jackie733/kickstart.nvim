@@ -52,6 +52,7 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>d', group = '[D]ebug' },
       { '<leader>g', group = '[G]it' },
       { '<leader>m', group = '[M]arkdown' },
+      { '<leader>p', group = '[P]ython' },
       { '<leader>r', group = '[R]eplace' },
       { '<leader>s', group = '[S]earch' },
       { '<leader>t', group = '[T]oggle' },

@@ -22,6 +22,7 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
+    'mfussenegger/nvim-dap-python',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -67,6 +68,22 @@ return {
       end,
       desc = 'Debug: Set Breakpoint',
     },
+    {
+      '<leader>dPt',
+      function()
+        require('dap-python').test_method()
+      end,
+      desc = 'Debug: Python Test Method',
+      ft = 'python',
+    },
+    {
+      '<leader>dPc',
+      function()
+        require('dap-python').test_class()
+      end,
+      desc = 'Debug: Python Test Class',
+      ft = 'python',
+    },
     -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
     {
       '<F7>',
@@ -87,7 +104,9 @@ return {
 
       -- You can provide additional configuration to the handlers,
       -- see mason-nvim-dap README for more information
-      handlers = {},
+      handlers = {
+        python = function() end,
+      },
 
       -- You'll need to check that you have the required things installed
       -- online, please don't ask me how to install them :)
@@ -199,26 +218,92 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- Python DAP 配置
-    dap.adapters.python = function(cb, config)
-      cb {
-        type = 'executable',
-        command = 'debugpy-adapter',
-      }
+    local project = require 'core.project'
+    local function python_path()
+      return project.python_path(0)
     end
+
+    local function debugpy_adapter()
+      if vim.fn.executable 'debugpy-adapter' == 1 then
+        return 'debugpy-adapter'
+      end
+
+      local mason_python = vim.fn.stdpath 'data' .. '/mason/packages/debugpy/venv/bin/python'
+      if vim.fn.executable(mason_python) == 1 then
+        return mason_python
+      end
+
+      return python_path()
+    end
+
+    require('dap-python').setup(debugpy_adapter())
+
     dap.configurations.python = {
       {
         type = 'python',
         request = 'launch',
         name = 'Launch file',
         program = '${file}',
-        pythonPath = function()
-          local venv = os.getenv 'VIRTUAL_ENV'
-          if venv then
-            return venv .. '/bin/python'
-          end
-          return 'python3'
+        cwd = function()
+          return project.python_root(0) or vim.fn.getcwd()
         end,
+        pythonPath = python_path,
+        justMyCode = false,
+      },
+      {
+        type = 'python',
+        request = 'launch',
+        name = 'Launch file with args',
+        program = '${file}',
+        cwd = function()
+          return project.python_root(0) or vim.fn.getcwd()
+        end,
+        args = function()
+          return vim.split(vim.fn.input 'Arguments: ', ' ', { trimempty = true })
+        end,
+        pythonPath = python_path,
+        justMyCode = false,
+      },
+      {
+        type = 'python',
+        request = 'launch',
+        name = 'Launch module',
+        module = function()
+          return vim.fn.input 'Module: '
+        end,
+        cwd = function()
+          return project.python_root(0) or vim.fn.getcwd()
+        end,
+        pythonPath = python_path,
+        justMyCode = false,
+      },
+      {
+        type = 'python',
+        request = 'launch',
+        name = 'Pytest current file',
+        module = 'pytest',
+        args = function()
+          return { vim.fn.expand '%' }
+        end,
+        cwd = function()
+          return project.python_root(0) or vim.fn.getcwd()
+        end,
+        pythonPath = python_path,
+        justMyCode = false,
+      },
+      {
+        type = 'python',
+        request = 'attach',
+        name = 'Attach debugpy localhost:5678',
+        connect = {
+          host = '127.0.0.1',
+          port = 5678,
+        },
+        cwd = function()
+          return project.python_root(0) or vim.fn.getcwd()
+        end,
+        pythonPath = python_path,
+        justMyCode = false,
       },
     }
   end,

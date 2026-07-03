@@ -23,11 +23,27 @@ local oxlint_markers = {
 local python_root_markers = {
   'pyrightconfig.json',
   'pyproject.toml',
+  'uv.lock',
+  'poetry.lock',
+  'pdm.lock',
   'setup.py',
   'setup.cfg',
   'requirements.txt',
   'Pipfile',
+  'tox.ini',
+  'noxfile.py',
+  'hatch.toml',
+  'environment.yml',
+  'environment.yaml',
+  '.python-version',
   '.git',
+}
+
+local python_venv_names = {
+  '.venv',
+  'venv',
+  '.env',
+  'env',
 }
 
 local package_sections = {
@@ -110,15 +126,34 @@ function M.python_root(bufnr)
   return root_file(bufnr, python_root_markers)
 end
 
+local function python_from_prefix(prefix)
+  if not prefix or prefix == '' then
+    return nil
+  end
+
+  for _, path in ipairs {
+    prefix .. '/bin/python',
+    prefix .. '/Scripts/python.exe',
+    prefix .. '/python.exe',
+  } do
+    if vim.fn.executable(path) == 1 then
+      return path
+    end
+  end
+
+  return nil
+end
+
 function M.python_path_for_root(root)
-  if vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV ~= '' then
-    return vim.env.VIRTUAL_ENV .. '/bin/python'
+  local active_python = python_from_prefix(vim.env.VIRTUAL_ENV) or python_from_prefix(vim.env.CONDA_PREFIX)
+  if active_python then
+    return active_python
   end
 
   root = root or vim.uv.cwd()
-  for _, dirname in ipairs { '.venv', 'venv' } do
-    local python = root .. '/' .. dirname .. '/bin/python'
-    if vim.fn.executable(python) == 1 then
+  for _, dirname in ipairs(python_venv_names) do
+    local python = python_from_prefix(root .. '/' .. dirname)
+    if python then
       return python
     end
   end

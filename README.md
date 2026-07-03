@@ -20,14 +20,14 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 - UI: Kanagawa, transparent centralized highlights, Snacks dashboard/toggles, Lualine, Bufferline, Neo-tree, Telescope.
 - Frontend: vtsls, vue_ls, eslint, tailwindcss, html, cssls, jsonls, yamlls, SchemaStore, nvim-ts-autotag, nvim-colorizer.
 - Rust: rustaceanvim, rust-analyzer, clippy, rustfmt, codelldb.
-- Python: basedpyright, ruff, debugpy, Conform formatting.
+- Python: basedpyright, ruff, debugpy, venv-selector, neotest-python, Conform formatting.
 - Diagnostics: native LSP diagnostics plus Trouble worklists.
 
 ## Language Support
 
 - React, Vue, TypeScript, JavaScript, and Node.js through `vtsls`, `vue_ls`, `eslint`, `tailwindcss`, `blink.cmp`, and Prettier.
 - Rust through `rustaceanvim`, `rust-analyzer`, `clippy`, `rustfmt`, and DAP integration when `codelldb` is available.
-- Python through `basedpyright`, `ruff`, `debugpy`, and Conform formatting.
+- Python through `basedpyright`, `ruff`, `debugpy`, `venv-selector.nvim`, `neotest-python`, and Conform formatting.
 - Markdown, JSON, CSS, SCSS, HTML, and YAML through Treesitter and Prettier-compatible formatting.
 
 ## Main Plugin Stack
@@ -41,7 +41,7 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 - Syntax: `nvim-treesitter`
 - Search: `telescope.nvim`
 - UI: `kanagawa.nvim`, `lualine.nvim`, `bufferline.nvim`, `noice.nvim`, `snacks.nvim`, `neo-tree.nvim`
-- Debugging: `nvim-dap`, `nvim-dap-ui`
+- Debugging: `nvim-dap`, `nvim-dap-ui`, `nvim-dap-python`
 
 ## Common Commands
 

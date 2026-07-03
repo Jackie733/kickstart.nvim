@@ -194,6 +194,17 @@ return {
         routes = {
           {
             filter = {
+              event = 'lsp',
+              kind = 'progress',
+              cond = function(message)
+                local progress = message.opts and message.opts.progress
+                return progress and progress.client == 'basedpyright'
+              end,
+            },
+            opts = { skip = true },
+          },
+          {
+            filter = {
               event = 'notify',
               find = 'No information available',
             },

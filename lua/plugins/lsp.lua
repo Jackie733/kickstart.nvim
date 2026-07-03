@@ -291,6 +291,18 @@ return {
       },
       basedpyright = {
         root_dir = root_dir(project.python_root),
+        settings = {
+          basedpyright = {
+            disableOrganizeImports = true,
+            analysis = {
+              autoImportCompletions = true,
+              diagnosticSeverityOverrides = {
+                reportUnusedImport = 'none',
+                reportUnusedVariable = 'none',
+              },
+            },
+          },
+        },
         before_init = function(_, config)
           local root = type(config.root_dir) == 'string' and config.root_dir or vim.fn.getcwd()
           config.settings = config.settings or {}
