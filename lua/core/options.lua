@@ -7,6 +7,10 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
+if vim.g.tsien_transparent_background == nil then
+  vim.g.tsien_transparent_background = true
+end
+
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
@@ -77,6 +81,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.laststatus = 3
 vim.o.winborder = 'rounded'
 vim.opt.pumblend = 0
+vim.opt.winblend = 0
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'nosplit' -- preview incremental substitute

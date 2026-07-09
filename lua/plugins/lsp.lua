@@ -95,7 +95,9 @@ return {
         map_lsp(event, 'gy', require('telescope.builtin').lsp_type_definitions, '[G]oto T[y]pe Definition')
         map_lsp(event, '<leader>cs', require('telescope.builtin').lsp_document_symbols, '[C]ode [S]ymbols')
         map_lsp(event, '<leader>cS', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[C]ode Workspace [S]ymbols')
-        map_lsp(event, 'K', vim.lsp.buf.hover, 'Hover Documentation')
+        map_lsp(event, 'K', function()
+          vim.lsp.buf.hover()
+        end, 'Hover Documentation')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if client and client.name == 'vtsls' then

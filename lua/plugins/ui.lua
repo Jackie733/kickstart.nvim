@@ -20,6 +20,22 @@ local function pad_dashboard_header(header)
   return table.concat(lines, '\n')
 end
 
+local function lualine_theme()
+  local colors_name = vim.g.colors_name
+  if type(colors_name) == 'string' and colors_name ~= '' then
+    local theme_module = 'lualine.themes.' .. colors_name
+    package.loaded[theme_module] = nil
+
+    local ok, theme = pcall(require, theme_module)
+    if ok then
+      return theme
+    end
+  end
+
+  package.loaded['lualine.themes.auto'] = nil
+  return require 'lualine.themes.auto'
+end
+
 return {
   {
     'akinsho/bufferline.nvim',
@@ -49,7 +65,6 @@ return {
         indicator = { style = 'none' },
         max_name_length = 24,
         max_prefix_length = 18,
-        tab_size = 18,
         show_buffer_close_icons = false,
         show_close_icon = false,
         diagnostics_indicator = function(_, _, diag)
@@ -96,12 +111,9 @@ return {
 
       vim.o.laststatus = vim.g.lualine_laststatus
 
-      -- 使用 auto 主题作为基础，它会自动抓取当前 colorscheme 的颜色
-      local custom_theme = require 'lualine.themes.auto'
-
       local opts = {
         options = {
-          theme = custom_theme,
+          theme = lualine_theme(),
           globalstatus = vim.o.laststatus == 3,
           disabled_filetypes = { statusline = { 'dashboard', 'alpha', 'ministarter', 'snacks_dashboard' } },
         },
@@ -174,6 +186,17 @@ return {
 
       return opts
     end,
+    config = function(_, opts)
+      require('lualine').setup(opts)
+
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        group = vim.api.nvim_create_augroup('tsien-lualine-theme', { clear = true }),
+        callback = function()
+          opts.options.theme = lualine_theme()
+          require('lualine').setup(opts)
+        end,
+      })
+    end,
   },
   -- noice
   {
@@ -216,6 +239,17 @@ return {
           override = {
             ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
             ['vim.lsp.util.stylize_markdown'] = true,
+          },
+        },
+        views = {
+          hover = {
+            win_options = {
+              winhighlight = {
+                Normal = 'TsienLspHover',
+                EndOfBuffer = 'TsienLspHover',
+                FloatBorder = 'TsienLspHoverBorder',
+              },
+            },
           },
         },
         -- you can enable a preset for easier configuration
@@ -267,6 +301,16 @@ return {
           Snacks.toggle.treesitter():map '<leader>uT'
           Snacks.toggle.inlay_hints():map '<leader>uh'
           Snacks.toggle.indent():map '<leader>ui'
+          Snacks.toggle({
+            id = 'transparent_background',
+            name = 'Transparent Background',
+            get = function()
+              return require('core.transparent').is_enabled()
+            end,
+            set = function(state)
+              require('core.transparent').set(state)
+            end,
+          }):map '<leader>ut'
         end,
       })
     end,
@@ -290,6 +334,9 @@ return {
         win = {
           width = 0.98,
           height = 0.98,
+          wo = {
+            winhighlight = 'Normal:Normal,NormalNC:Normal,EndOfBuffer:Normal,WinBar:WinBar,WinBarNC:WinBarNC',
+          },
         },
       },
       dashboard = {

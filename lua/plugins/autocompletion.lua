@@ -91,7 +91,7 @@ return {
           desired_min_height = 8,
           border = 'rounded', -- 文档窗口边框
           winblend = 0,
-          winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,EndOfBuffer:NormalFloat',
+          winhighlight = 'Normal:BlinkCmpDoc,NormalNC:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc,CursorLine:BlinkCmpDocCursorLine',
           scrollbar = false,
         },
       },
@@ -100,7 +100,7 @@ return {
         max_height = 8,
         border = 'rounded', -- 补全菜单边框
         winblend = 0,
-        winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:BlinkCmpMenuSelection,Search:None',
+        winhighlight = 'Normal:BlinkCmpMenu,NormalNC:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,EndOfBuffer:BlinkCmpMenu,CursorLine:BlinkCmpMenuSelection,Search:None',
         scrollbar = false,
         draw = {
           columns = { { 'kind_icon' }, { 'label', 'label_description', gap = 1 } },
@@ -142,23 +142,11 @@ return {
       window = {
         border = 'rounded',
         winblend = 0,
-        winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder',
+        winhighlight = 'Normal:BlinkCmpSignatureHelp,NormalNC:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder',
       },
     },
   },
   config = function(_, opts)
     require('blink.cmp').setup(opts)
-
-    vim.api.nvim_create_autocmd('User', {
-      group = vim.api.nvim_create_augroup('tsien-blink-redraw', { clear = true }),
-      pattern = { 'BlinkCmpListSelect', 'BlinkCmpMenuClose', 'BlinkCmpMenuPositionUpdate' },
-      callback = function()
-        vim.schedule(function()
-          if vim.api.nvim_get_mode().mode:match '^[ic]' then
-            vim.cmd 'redraw!'
-          end
-        end)
-      end,
-    })
   end,
 }
