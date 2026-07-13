@@ -269,6 +269,12 @@ return {
       words = { enabled = true },
       bigfile = { enabled = true },
       quickfile = { enabled = true },
+      image = {
+        enabled = true,
+        doc = {
+          enabled = false,
+        },
+      },
       lazygit = {
         win = {
           width = 0.98,

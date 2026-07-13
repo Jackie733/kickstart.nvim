@@ -9,8 +9,19 @@ return {
     keys = {
       { '<leader>um', '<cmd>Markview toggle<cr>', desc = 'Toggle [M]arkdown Preview' },
       { '<leader>uM', '<cmd>Markview splitToggle<cr>', desc = 'Toggle [M]arkdown Split Preview' },
+      {
+        '<leader>mp',
+        function()
+          require('markdown.image_preview').show()
+        end,
+        desc = '[M]arkdown Image [P]review',
+      },
     },
     init = function()
+      vim.api.nvim_create_user_command('MarkdownImagePreview', function()
+        require('markdown.image_preview').show()
+      end, {})
+
       local markdown_augroup = vim.api.nvim_create_augroup('markdown-local-options', { clear = true })
       vim.api.nvim_create_autocmd('FileType', {
         group = markdown_augroup,
