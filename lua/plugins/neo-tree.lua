@@ -18,6 +18,7 @@ return {
   end,
   opts = {
     sources = { 'filesystem', 'buffers', 'git_status', 'document_symbols' },
+    popup_border_style = '', -- 使用全局 winborder，避免 NC 样式在透明背景下产生异常底色
     open_files_do_not_replace_types = { 'terminal', 'Trouble', 'trouble', 'qf', 'Outline' },
     -- 新增/重命名文件后自动定位
     event_handlers = {
