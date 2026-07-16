@@ -57,6 +57,7 @@ local prefixes = {
 local derived_groups = {
   TsienLspHover = 'NormalFloat',
   TsienLspHoverBorder = 'FloatBorder',
+  WinSeparator = 'LineNr',
 }
 
 local function clear_bg(group)
