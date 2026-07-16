@@ -77,6 +77,7 @@ vim.opt.splitkeep = 'screen'
 --  and `:help 'listchars'`
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.fillchars:append { eob = ' ' }
 
 vim.opt.laststatus = 3
 vim.o.winborder = 'rounded'
