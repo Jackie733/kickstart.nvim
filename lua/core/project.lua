@@ -68,10 +68,6 @@ local function root_file(bufnr, names)
   return vim.fs.root(buf_dir(bufnr), names)
 end
 
-local function package_json(bufnr)
-  return vim.fs.find('package.json', { upward = true, path = buf_dir(bufnr) })[1]
-end
-
 local function read_package(path)
   if package_cache[path] ~= nil then
     return package_cache[path] or nil
@@ -93,29 +89,30 @@ local function read_package(path)
   return data
 end
 
-local function has_package_dependency(bufnr, names)
-  local path = package_json(bufnr)
-  if not path then
-    return false
-  end
+local function package_dependency_root(bufnr, names)
+  local paths = vim.fs.find('package.json', {
+    upward = true,
+    path = buf_dir(bufnr),
+    limit = math.huge,
+  })
 
-  local data = read_package(path)
-  if not data then
-    return false
-  end
-
-  for _, section in ipairs(package_sections) do
-    local dependencies = data[section]
-    if type(dependencies) == 'table' then
-      for _, name in ipairs(names) do
-        if dependencies[name] ~= nil then
-          return true
+  for _, path in ipairs(paths) do
+    local data = read_package(path)
+    if data then
+      for _, section in ipairs(package_sections) do
+        local dependencies = data[section]
+        if type(dependencies) == 'table' then
+          for _, name in ipairs(names) do
+            if dependencies[name] ~= nil then
+              return vim.fs.dirname(path)
+            end
+          end
         end
       end
     end
   end
 
-  return false
+  return nil
 end
 
 function M.is_frontend_filetype(filetype)
@@ -171,11 +168,7 @@ function M.oxfmt_root(bufnr)
     return root
   end
 
-  if has_package_dependency(bufnr, { 'oxfmt' }) then
-    return vim.fs.dirname(package_json(bufnr))
-  end
-
-  return nil
+  return package_dependency_root(bufnr, { 'oxfmt', 'vite-plus' })
 end
 
 function M.oxlint_root(bufnr)
@@ -184,11 +177,7 @@ function M.oxlint_root(bufnr)
     return root
   end
 
-  if has_package_dependency(bufnr, { 'oxlint' }) then
-    return vim.fs.dirname(package_json(bufnr))
-  end
-
-  return nil
+  return package_dependency_root(bufnr, { 'oxlint', 'vite-plus' })
 end
 
 function M.has_oxfmt(bufnr)
