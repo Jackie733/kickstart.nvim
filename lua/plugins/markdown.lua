@@ -1,14 +1,14 @@
 return {
   {
-    'OXY2DEV/markview.nvim',
+    'MeanderingProgrammer/render-markdown.nvim',
     ft = { 'markdown', 'markdown.mdx' },
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
       'echasnovski/mini.icons',
     },
     keys = {
-      { '<leader>um', '<cmd>Markview toggle<cr>', desc = 'Toggle [M]arkdown Preview' },
-      { '<leader>uM', '<cmd>Markview splitToggle<cr>', desc = 'Toggle [M]arkdown Split Preview' },
+      { '<leader>um', '<cmd>RenderMarkdown toggle<cr>', desc = 'Toggle [M]arkdown Preview' },
+      { '<leader>uM', '<cmd>RenderMarkdown preview<cr>', desc = 'Open [M]arkdown Split Preview' },
       {
         '<leader>mp',
         function()
@@ -35,9 +35,7 @@ return {
       })
     end,
     opts = {
-      preview = {
-        icon_provider = 'mini',
-      },
+      file_types = { 'markdown', 'markdown.mdx' },
     },
   },
 }
