@@ -175,6 +175,10 @@ return {
     'folke/noice.nvim',
     event = 'VeryLazy',
     opts = {},
+    keys = {
+      { '<leader>n', '<cmd>Noice history<cr>', desc = 'Notification History' },
+      { '<leader>un', '<cmd>Noice dismiss<cr>', desc = 'Dismiss All Notifications' },
+    },
     dependencies = {
       -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       'MunifTanjim/nui.nvim',
@@ -268,19 +272,13 @@ return {
     opts = {
       indent = { enabled = true },
       input = { enabled = true },
-      notifier = { enabled = true },
+      notifier = { enabled = false },
       scope = { enabled = true },
       scroll = { enabled = false },
       statuscolumn = { enabled = false },
       words = { enabled = true },
       bigfile = { enabled = true },
       quickfile = { enabled = true },
-      image = {
-        enabled = true,
-        doc = {
-          enabled = false,
-        },
-      },
       lazygit = {
         win = {
           width = 0.98,
@@ -311,13 +309,6 @@ return {
           { section = 'startup' },
         },
       },
-    },
-    -- stylua: ignore
-    keys = {
-      { "<leader>n", function()
-        Snacks.notifier.show_history()
-      end, desc = "Notification History" },
-      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     },
   },
 }

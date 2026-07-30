@@ -5,6 +5,50 @@ return {
     dependencies = {
       'nvim-telescope/telescope.nvim',
     },
+    keys = {
+      {
+        '<leader>km',
+        function()
+          require('bookmarks').bookmark_toggle()
+        end,
+        desc = 'Toggle Bookmark',
+      },
+      {
+        '<leader>ka',
+        function()
+          require('bookmarks').bookmark_ann()
+        end,
+        desc = 'Annotate Bookmark',
+      },
+      {
+        '<leader>kc',
+        function()
+          require('bookmarks').bookmark_clean()
+        end,
+        desc = 'Clean Buffer Bookmarks',
+      },
+      {
+        '<leader>kn',
+        function()
+          require('bookmarks').bookmark_next()
+        end,
+        desc = 'Next Bookmark',
+      },
+      {
+        '<leader>kp',
+        function()
+          require('bookmarks').bookmark_prev()
+        end,
+        desc = 'Previous Bookmark',
+      },
+      {
+        '<leader>kl',
+        function()
+          require('bookmarks').bookmark_list()
+        end,
+        desc = 'List Bookmarks',
+      },
+    },
     config = function()
       require('bookmarks').setup {
         save_file = vim.fn.expand '$HOME/.bookmarks', -- bookmarks save file path
@@ -14,16 +58,6 @@ return {
           ['@f'] = '⛏ ', -- mark annotation startswith @f ,signs this icon as `Fix`
           ['@n'] = ' ', -- mark annotation startswith @n ,signs this icon as `Note`
         },
-        on_attach = function(bufnr)
-          local bm = require 'bookmarks'
-          local map = vim.keymap.set
-          map('n', 'mm', bm.bookmark_toggle) -- add or remove bookmark at current line
-          map('n', 'mi', bm.bookmark_ann) -- add or edit mark annotation at current line
-          map('n', 'mc', bm.bookmark_clean) -- clean all marks in local buffer
-          map('n', 'mn', bm.bookmark_next) -- jump to next mark in local buffer
-          map('n', 'mp', bm.bookmark_prev) -- jump to previous mark in local buffer
-          map('n', 'ml', bm.bookmark_list) -- show marked file list in quickfix window
-        end,
       }
 
       require('telescope').load_extension 'bookmarks'

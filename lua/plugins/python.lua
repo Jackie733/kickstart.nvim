@@ -26,7 +26,6 @@ return {
       'nvim-lua/plenary.nvim',
       'nvim-neotest/nvim-nio',
       'nvim-treesitter/nvim-treesitter',
-      'antoinemadec/FixCursorHold.nvim',
       'nvim-neotest/neotest-python',
     },
     keys = {

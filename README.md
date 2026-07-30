@@ -4,16 +4,16 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 
 ## Requirements
 
-- Neovim `>= 0.11`
+- Neovim `>= 0.12`
 - Git
 - A C compiler and `make`
 - `ripgrep`
 - `fd`
 - Node.js and npm
 - Python 3
-- Rust toolchain with `cargo`, `rustfmt`, and `clippy`
+- Rust toolchain with `cargo`, `rust-analyzer`, `rustfmt`, and `clippy`
 - Optional: `lazygit`
-- Optional: Nerd Font for richer icons
+- Nerd Font
 
 ## Feature Overview
 
@@ -28,13 +28,13 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 - React, Vue, TypeScript, JavaScript, and Node.js through `vtsls`, `vue_ls`, `eslint`, `tailwindcss`, `blink.cmp`, and Prettier.
 - Rust through `rustaceanvim`, `rust-analyzer`, `clippy`, `rustfmt`, and DAP integration when `codelldb` is available.
 - Python through `basedpyright`, `ruff`, `debugpy`, `venv-selector.nvim`, `neotest-python`, and Conform formatting.
-- Markdown, JSON, CSS, SCSS, HTML, and YAML through Treesitter and Prettier-compatible formatting.
+- Markdown rendering through `render-markdown.nvim`; Markdown, JSON, CSS, SCSS, HTML, and YAML formatting through Treesitter and Prettier-compatible tools.
 
 ## Main Plugin Stack
 
 - Plugin manager: `lazy.nvim`
 - Completion: `blink.cmp` with LuaSnip snippets
-- LSP: native Neovim 0.11+ `vim.lsp.config()` / `vim.lsp.enable()`
+- LSP: native Neovim 0.12+ `vim.lsp.config()` / `vim.lsp.enable()`
 - External tools: `mason.nvim`, `mason-lspconfig.nvim`, `mason-tool-installer.nvim`
 - Formatting: `conform.nvim`
 - Linting: `nvim-lint`

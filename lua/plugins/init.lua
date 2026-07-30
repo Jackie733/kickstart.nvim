@@ -10,8 +10,6 @@ return {
     opts = {},
     config = function(_, opts)
       require('snacks').setup(opts)
-      -- HACK: restore vim.notify after snacks setup and let noice.nvim take over
-      -- this is needed to have early notifications show up in noice history
     end,
   },
 }

@@ -1,12 +1,13 @@
 return {
   {
     'mrcjkb/rustaceanvim',
-    version = '^5',
+    version = '^9',
     ft = 'rust',
     init = function()
       vim.g.rustaceanvim = {
         tools = {},
         server = {
+          cmd = { 'rustup', 'run', 'stable', 'rust-analyzer' },
           on_attach = function(_, bufnr)
             local map = function(keys, func, desc)
               vim.keymap.set('n', keys, func, { buffer = bufnr, desc = 'Rust: ' .. desc })
@@ -22,12 +23,11 @@ return {
           default_settings = {
             ['rust-analyzer'] = {
               cargo = {
-                allFeatures = true,
-                loadOutDirsFromCheck = true,
+                features = 'all',
                 buildScripts = { enable = true },
               },
-              checkOnSave = {
-                allFeatures = true,
+              checkOnSave = true,
+              check = {
                 command = 'clippy',
                 extraArgs = { '--no-deps' },
               },

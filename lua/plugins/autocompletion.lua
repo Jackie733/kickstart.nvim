@@ -61,8 +61,6 @@ return {
       -- See :h blink-cmp-config-keymap for defining your own keymap
       preset = 'default',
 
-      -- 添加 Enter 键选中补全项
-      ['<CR>'] = { 'accept', 'fallback' },
       ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
       ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
 
@@ -84,17 +82,12 @@ return {
         auto_show_delay_ms = 200,
         update_delay_ms = 120,
         window = {
-          min_width = 48,
-          max_width = 48,
           max_height = 12,
-          desired_min_width = 48,
-          desired_min_height = 8,
           border = 'rounded', -- 文档窗口边框
           scrollbar = false,
         },
       },
       menu = {
-        min_width = 28,
         max_height = 8,
         border = 'rounded', -- 补全菜单边框
         scrollbar = false,
