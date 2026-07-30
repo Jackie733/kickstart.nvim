@@ -22,7 +22,11 @@ return {
       -- 然后在上面的 `keys` 表中添加一个 <C-t> 的映射
       open_mapping = [[<c-\>]],
       direction = 'float', -- 默认使用浮动窗口，不会影响 buffer 布局
-      shading_factor = 2,
+      shade_terminals = false,
+      highlights = {
+        NormalFloat = { link = 'NormalFloat' },
+        FloatBorder = { link = 'FloatBorder' },
+      },
       float_opts = {
         border = 'rounded',
         winblend = 0,
@@ -32,10 +36,6 @@ return {
         height = function()
           return math.floor(vim.o.lines * 0.9)
         end,
-        highlights = {
-          border = 'FloatBorder',
-          background = 'Normal',
-        },
       },
     }
     local Terminal = require('toggleterm.terminal').Terminal

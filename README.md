@@ -17,7 +17,7 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 
 ## Feature Overview
 
-- UI: Kanagawa, transparent centralized highlights, Snacks dashboard/toggles, Lualine, Bufferline, Neo-tree, Telescope.
+- UI: Kanagawa, Snacks dashboard/toggles, Lualine, Bufferline, Neo-tree, Telescope.
 - Frontend: vtsls, vue_ls, eslint, tailwindcss, html, cssls, jsonls, yamlls, SchemaStore, nvim-ts-autotag, nvim-colorizer.
 - Rust: rustaceanvim, rust-analyzer, clippy, rustfmt, codelldb.
 - Python: basedpyright, ruff, debugpy, venv-selector, neotest-python, Conform formatting.
