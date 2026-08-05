@@ -27,6 +27,7 @@ return {
         'javascript',
         'tsx',
         'rust',
+        'sql',
         'toml',
         'vue',
         'python',

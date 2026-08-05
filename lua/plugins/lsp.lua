@@ -324,6 +324,13 @@ return {
           client.server_capabilities.hoverProvider = false
         end,
       },
+      sqruff = {},
+      sqls = {
+        root_dir = root_dir(function(bufnr)
+          return vim.fs.root(bufnr, { '.sqruff', '.git' })
+        end),
+        on_attach = disable_formatting,
+      },
     }
 
     local server_names = {
@@ -338,6 +345,8 @@ return {
       'yamlls',
       'basedpyright',
       'ruff',
+      'sqruff',
+      'sqls',
     }
     for _, server_name in ipairs(server_names) do
       local server = servers[server_name]
@@ -345,8 +354,13 @@ return {
       vim.lsp.config(server_name, server)
     end
 
+    local mason_server_names = vim.tbl_filter(function(server_name)
+      -- Mason builds sqls from source and requires Go; use an existing binary when available.
+      return server_name ~= 'sqls' or vim.fn.executable 'sqls' == 0
+    end, server_names)
+
     require('mason-lspconfig').setup {
-      ensure_installed = server_names,
+      ensure_installed = mason_server_names,
       automatic_enable = false,
     }
 

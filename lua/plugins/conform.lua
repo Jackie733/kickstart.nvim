@@ -47,6 +47,7 @@ return {
       lua = { 'stylua' },
       python = { 'ruff_organize_imports', 'ruff_fix', 'ruff_format' },
       rust = { 'rustfmt' },
+      sql = { 'sqruff' },
       sh = { 'shfmt' },
       bash = { 'shfmt' },
       javascript = frontend_formatters,
