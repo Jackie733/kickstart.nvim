@@ -18,7 +18,7 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 
 ## Feature Overview
 
-- UI: Kanagawa, Snacks dashboard/toggles, Lualine, Bufferline, Neo-tree, Telescope.
+- UI: Gruber Darker (default), Kanagawa, Snacks dashboard/toggles, Lualine, Bufferline, Neo-tree, Telescope.
 - Frontend: vtsls, vue_ls, project-aware ESLint/Oxlint and Prettier/Oxfmt selection, tailwindcss, HTML/CSS/JSON/YAML language servers, SchemaStore, nvim-ts-autotag, and nvim-colorizer.
 - Rust: rustaceanvim, rust-analyzer, clippy, rustfmt, codelldb.
 - Python: basedpyright, ruff, debugpy, venv-selector, neotest-python, Conform formatting.
@@ -41,7 +41,7 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 - Linting: language servers for code, `nvim-lint` for Markdown
 - Syntax: `nvim-treesitter`
 - Search: `telescope.nvim`
-- UI: `kanagawa.nvim`, `lualine.nvim`, `bufferline.nvim`, `noice.nvim`, `snacks.nvim`, `neo-tree.nvim`
+- UI: `gruber-darker.nvim`, `kanagawa.nvim`, `lualine.nvim`, `bufferline.nvim`, `noice.nvim`, `snacks.nvim`, `neo-tree.nvim`
 - Debugging: `nvim-dap`, `nvim-dap-ui`, `nvim-dap-python`
 
 ## Common Commands
@@ -62,6 +62,12 @@ After initial setup, run `:TSInstallConfigured` to install the configured parser
 Rust: `<leader>cC` runs workspace Clippy in a terminal; `<leader>dr` selects a debug target. Debugging plugins and targets load when requested. Python's `<leader>cv` opens the environment selector; project environment discovery is automatic through `core.project`.
 
 `<C-Space>` selects a syntax node in Normal mode and expands it in Visual mode; Visual `<BS>` shrinks it. Files over 1.5 MiB or with very long average lines automatically use plain text rendering and skip automatic formatting. Manual formatting remains available with `<leader>f`.
+
+## Theme
+
+The default theme is `gruber-darker`. Change `local colorscheme` at the top of `lua/plugins/colorschema.lua` to persist a different theme, then restart Neovim. Available alternatives include `kanagawa-wave`, `kanagawa-dragon`, and `kanagawa-lotus`.
+
+For a temporary switch, run `:colorscheme kanagawa-wave` or `:colorscheme gruber-darker`. Use `:colorscheme <Tab>` to see available themes. Gruber Darker preferences can be customized in its `opts` table in the same file.
 
 ## Validation
 
