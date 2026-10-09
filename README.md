@@ -72,12 +72,12 @@ For a temporary switch, run `:colorscheme tsien-dark` or `:colorscheme kanagawa-
 ### Maintaining Tsien Dark
 
 - `lua/theme/palette.lua`: the exact upstream palette, keeping its original names. Start here to adjust the overall look.
-- `lua/theme/highlights.lua`: all 281 upstream default highlight definitions, including syntax, diagnostics, and plugin integrations. Change `Comment.italic` here to disable italic comments.
+- `lua/theme/highlights.lua`: upstream highlight definitions plus local readability adjustments, including syntax, diagnostics, and plugin integrations. Change `Comment.italic` here to disable italic comments.
 - `colors/tsien-dark.lua`: native colorscheme entry and terminal palette. No plugin is needed to load it.
 
-The first version reproduces gruber-darker.nvim default options at commit `35cb97959ef01f7193c94c404c13ddb3d4346654`. Colors, links, bold/italic styles, terminal colors, cursor styling, help/quickfix window behavior, and semantic-highlight clearing match that baseline. The theme name is `tsien-dark`; upstream `GruberDarker*` highlight names are retained to preserve their links. Upstream attribution and MIT license are in `lua/theme/LICENSE.gruber-darker`. Local changes are independent of future upstream updates.
+The first version reproduces gruber-darker.nvim default options at commit `35cb97959ef01f7193c94c404c13ddb3d4346654`. Colors, links, bold/italic styles, terminal colors, cursor styling, help/quickfix window behavior, and semantic-highlight clearing match that baseline. The theme name is `tsien-dark`; upstream `GruberDarker*` highlight names are retained to preserve their links. Upstream attribution and MIT license are in `lua/theme/LICENSE.gruber-darker`. Local changes are independent of future upstream updates. Current adjustments brighten property/member captures using the existing `niagara` color; soften inline diagnostics without bold text while retaining severity-colored gutter signs; improve matching-bracket, error-message and folded-text contrast; and distinguish changed diff characters with a stronger background and underline. The original palette remains unchanged.
 
-After saving a palette or highlight edit, run `:colorscheme tsien-dark` to reload both modules. Use `:Inspect` on code to identify the Treesitter/LSP groups involved, and `:highlight GroupName` to inspect UI groups. Prefer links to existing roles over new literal colors. Plugin-specific styling belongs in the highlight table. Avoid adding integrations before comparing the unchanged baseline; plugin defaults should initially behave the same as with gruber-darker.
+After saving a palette or highlight edit, run `:colorscheme tsien-dark` to reload both modules. Use `:Inspect` on code to identify the Treesitter/LSP groups involved, and `:highlight GroupName` to inspect UI groups. Prefer links to existing roles over new literal colors. Plugin-specific styling belongs in the highlight table. Keep intentional differences documented and prefer changes to specific roles over global palette substitutions.
 
 Before keeping a change, inspect TypeScript/TSX, Vue, Rust, Python, Lua, and Markdown files, plus diagnostics, Telescope, Neo-tree, completion, the statusline, tabs, and a terminal. Check both active and inactive windows and switch away and back. Font rendering, terminal colors, and subjective comfort still need visual review in your own terminal.
 
@@ -87,7 +87,7 @@ Run the theme lifecycle checks without any third-party theme installed:
 NVIM_LOG_FILE=/tmp/tsien-theme.log nvim --headless -u NONE -i NONE --cmd 'set rtp^=.' '+luafile tests/theme.lua'
 ```
 
-For an optional exact baseline comparison, set `TSIEN_THEME_REFERENCE` to a checkout of gruber-darker.nvim at the documented commit when running the same command. This reference is not part of the configured plugins. Update parity expectations when introducing intentional style changes.
+For an optional baseline comparison of unchanged definitions, set `TSIEN_THEME_REFERENCE` to a checkout of gruber-darker.nvim at the documented commit when running the same command. This reference is not part of the configured plugins. The comparison allows the documented changed groups; contrast and hierarchy checks validate those adjustments.
 
 ## Validation
 
