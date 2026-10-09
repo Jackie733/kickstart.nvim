@@ -44,4 +44,19 @@ Raw startup logs, UI snapshots, and the comparison summary are stored in `/tmp/t
 
 ## Day-to-day behavior
 
-Run `:TSInstallConfigured` and `:MasonToolsInstall` explicitly after initial setup or when adding tools. Project-local Python environment discovery remains automatic; `<leader>cv` loads the environment selector when needed. Automatic formatting remains before save with a bounded timeout; `<leader>f` performs manual formatting asynchronously.
+Run `:TsienSetup` after initial setup or when adding tools, and `:TsienCheck` for read-only verification. Missing configured parsers are now installed asynchronously on first use; regular startup does not run a global environment scan. Project-local Python environment discovery remains automatic; `<leader>cv` loads the environment selector when needed. Automatic formatting remains before save with a bounded timeout; `<leader>f` performs manual formatting asynchronously.
+
+## Environment setup follow-up
+
+The current local validation uses Neovim 0.12.1, not the historical 0.12.2 comparison above. Environment commands only register at startup; global scans and system installers run when requested. Rust binary resolution runs on demand in the opened project's directory and checks the real toolchain component before using a standalone fallback.
+
+Five warm runs with a 120×40 attached UI, after one discarded warmup, measured median first-screen times of 37.2 ms (empty), 92.9 ms (Rust), 138.5 ms (TypeScript), 165.3 ms (TSX), 162.7 ms (Vue), and 120.7 ms (Python). A 140,000-line / 2.24 MB TypeScript fixture opened in 66.2 ms. These include process creation and the first completed screen after VimEnter; they do not measure background analysis readiness. The samples used for frontend/Python were small controlled projects; Rust used `devctl/src/main.rs`.
+
+Validation:
+
+- `tests/config.lua` and `tests/theme.lua` pass.
+- `tests/environment.lua` checks old/invalid/missing CLI detection, broken rustup fallback, shared parser requests, failed-download suppression, subprocess spawn failure, concurrent-setup prevention, simulated system-package repair, and registry failure reporting. It ends with a real read-only environment check.
+- `tests/parser-auto.lua` runs a real Rust parser installation in a private directory. Three buffers share one installation, live buffers gain highlighting and indentation without a restart, and deleted/changed buffers are skipped. Set `TSIEN_TEST_DIR` to a fresh private directory before running it.
+- `tests/environment-ui.lua` verifies result-window contents, its close shortcut, and buffer reuse.
+- Real initialization installed missing Oxfmt, Prettier, and shfmt plus Rust components. Forced repair rebuilt all configured parsers; a fresh process then passed environment and parser/query checks.
+- TypeScript, JSX, TSX, Vue, Python, and Rust attach the expected servers, return a valid hover, and expose available formatters. Existing plugin lockfile changes were preserved.

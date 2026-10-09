@@ -309,21 +309,9 @@ return {
       },
     }
 
-    local server_names = {
-      'lua_ls',
-      'vtsls',
-      'vue_ls',
-      'eslint',
-      'oxlint',
-      'tailwindcss',
-      'html',
-      'cssls',
-      'jsonls',
-      'yamlls',
-      'basedpyright',
-      'ruff',
-      'sqruff',
-    }
+    local dependencies = require 'core.dependencies'
+    local server_names = vim.tbl_keys(dependencies.servers)
+    table.sort(server_names)
     local has_external_sqls = vim.fn.executable 'sqls' == 1
     if has_external_sqls or vim.fn.executable 'go' == 1 then
       table.insert(server_names, 'sqls')
@@ -346,17 +334,7 @@ return {
 
     require('mason-tool-installer').setup {
       run_on_start = false,
-      ensure_installed = {
-        'stylua',
-        'prettierd',
-        'prettier',
-        'oxfmt',
-        'shfmt',
-        'markdownlint',
-        'debugpy',
-        'js-debug-adapter',
-        'codelldb',
-      },
+      ensure_installed = dependencies.tools,
       integrations = {
         ['mason-lspconfig'] = false,
         ['mason-null-ls'] = false,

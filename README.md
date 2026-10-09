@@ -10,11 +10,14 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 - `tree-sitter` CLI `>= 0.26.1` for parser installation
 - `ripgrep`
 - `fd`
-- Node.js and npm
+- Node.js `>= 20.19` and npm
 - Python 3
 - Rust toolchain with `cargo`, `rust-analyzer`, `rustfmt`, and `clippy`
 - Optional: `lazygit`
 - Nerd Font
+
+On macOS, install the parser build tool with `brew install tree-sitter-cli`.
+Homebrew's `tree-sitter` library is a separate package and does not provide this command.
 
 ## Feature Overview
 
@@ -53,11 +56,22 @@ Personal Neovim configuration derived from kickstart.nvim and tuned for frontend
 :ConformInfo
 :LspInfo
 :Typecheck
+:TsienCheck
+:TsienSetup
+:TsienSetup!
 :TSInstallConfigured
 :MasonToolsInstall
 ```
 
-After initial setup, run `:TSInstallConfigured` to install the configured parsers and `:MasonToolsInstall` to install formatters and debug adapters. Opening files does not run these installation checks.
+Run `:TsienSetup` once on a new machine. It checks system prerequisites, installs missing Homebrew dependencies on macOS, prepares the current project's Rust components, installs language servers/formatters/debug adapters, and synchronizes parsers with the installed Treesitter plugin. Repeating it skips usable tools. It preserves the project's Rust toolchain; a default stable toolchain is only created when no default or project override exists. System compilers and unsupported package managers receive actionable manual instructions rather than a shell installer.
+
+`:TsienCheck` is read-only and shows versions, missing executables, parser/query compatibility, managed tools, and Rust component availability. Both commands show progress in a result window (`q` closes it) and save the result in `stdpath('state')/tsien-environment.log`. Failed downloads and installation errors remain visible; detailed upstream logs are available with `:MasonLog` and `:TSLog`. Run setup from the target project when preparing a pinned Rust toolchain.
+
+`:TsienSetup!` rebuilds all configured parsers when an update causes incompatible parsing/highlighting. Restart Neovim after replacing loaded parsers: the current process may still hold the old library. Installed packages are not blindly updated to newer versions. Existing parser/tool installation commands remain available.
+
+Ordinary startup registers commands without running a global scan or starting installers. Opening a file with a missing configured parser installs that parser asynchronously if the required CLI/compiler are available, then restores highlighting and indentation in still-valid buffers. Multiple buffers share one installation; failed languages are not retried on every file open. Missing system tools point to `:TsienSetup`. Parser incompatibility points to `:TsienSetup!` and a restart.
+
+Rust analysis prefers the actual binary belonging to the project's active toolchain, falls back to Mason's standalone binary when that component is absent, and never treats a broken rustup proxy as a working server. Project packages such as Vue, React, TypeScript, pytest, and framework build/runtime dependencies are still managed by each project.
 
 Rust: `<leader>cC` runs workspace Clippy in a terminal; `<leader>dr` selects a debug target. Debugging plugins and targets load when requested. Python's `<leader>cv` opens the environment selector; project environment discovery is automatic through `core.project`.
 
