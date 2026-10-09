@@ -281,6 +281,8 @@ return function(c)
     ['diffAdded'] = { link = 'DiffAdd' },
     ['diffLine'] = { link = 'DiffChange' },
     ['diffRemoved'] = { link = 'DiffDelete' },
+    -- Native Vue syntax links the whole script region to Special (yellow).
+    ['javaScript'] = { link = 'Identifier' },
     ['lCursor'] = { bg = c['yellow'], fg = c['none'] },
     ['markdownBold'] = { link = 'GruberDarkerYellowBold' },
     ['markdownCode'] = { fg = c['green'] },

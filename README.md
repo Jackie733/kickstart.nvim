@@ -79,6 +79,8 @@ The first version reproduces gruber-darker.nvim default options at commit `35cb9
 
 After saving a palette or highlight edit, run `:colorscheme tsien-dark` to reload both modules. Use `:Inspect` on code to identify the Treesitter/LSP groups involved, and `:highlight GroupName` to inspect UI groups. Prefer links to existing roles over new literal colors. Plugin-specific styling belongs in the highlight table. Keep intentional differences documented and prefer changes to specific roles over global palette substitutions.
 
+Vue files require the `vue`, `typescript`, `javascript`, and `css` parsers on each machine. Run `:TSInstallConfigured`, wait for installation to finish, then restart Neovim. If `:Inspect` reports only `Syntax: javaScript` and `:set syntax?` reports `vue`, native syntax is being used instead of Treesitter. Tsien Dark makes the fallback script text neutral rather than yellow; full code-role colors require the parsers. A Vue Treesitter startup failure now reports the error and installation command.
+
 Before keeping a change, inspect TypeScript/TSX, Vue, Rust, Python, Lua, and Markdown files, plus diagnostics, Telescope, Neo-tree, completion, the statusline, tabs, and a terminal. Check both active and inactive windows and switch away and back. Font rendering, terminal colors, and subjective comfort still need visual review in your own terminal.
 
 Run the theme lifecycle checks without any third-party theme installed:

@@ -24,6 +24,7 @@ local function run()
     ErrorMsg = true,
     Folded = true,
     MatchParen = true,
+    javaScript = true,
   }
   local function affected(name, definitions)
     if changed[name] then
