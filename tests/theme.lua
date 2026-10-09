@@ -25,6 +25,15 @@ local function run()
     Folded = true,
     MatchParen = true,
     javaScript = true,
+    MiniIconsAzure = true,
+    MiniIconsBlue = true,
+    MiniIconsCyan = true,
+    MiniIconsGreen = true,
+    MiniIconsGrey = true,
+    MiniIconsOrange = true,
+    MiniIconsPurple = true,
+    MiniIconsRed = true,
+    MiniIconsYellow = true,
   }
   local function affected(name, definitions)
     if changed[name] then

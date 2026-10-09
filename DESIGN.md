@@ -74,3 +74,5 @@ TsienVim is a personal Neovim configuration for JavaScript/TypeScript, Vue, Rust
 - Tests enforce at least 4.5:1 text contrast for changed reading roles, quieter inline warnings, preserved warning-sign emphasis, and distinct diff character emphasis. Optional upstream comparison excludes only the documented changed definitions and their inherited appearance; all other definitions and terminal behavior remain checked after applying the documented yellow/green substitutions.
 
 - Native Vue syntax gives the whole script region the `javaScript` group, which upstream links to yellow Special. Tsien Dark links that region to Identifier for readable fallback text. Parser installation remains explicit on each machine; Treesitter startup failures for configured languages show the underlying error and `:TSInstallConfigured` recovery command.
+
+- The nvim-web-devicons compatibility entry explicitly loads mini.icons through Lazy before creating the mock, ensuring setup options and ColorScheme callbacks are registered. Tsien Dark defines all nine MiniIcons color groups directly from its palette so icon colors do not inherit unrelated diagnostic or syntax roles.
