@@ -1,0 +1,57 @@
+# Purpose
+
+TsienVim is a personal Neovim configuration for JavaScript/TypeScript, Vue, Rust, and Python development. It favors explicit language ownership and predictable loading over distribution-style abstraction.
+
+# System model
+
+- `core.project` detects project roots, local executables, Python environments, and frontend toolchains.
+- Native Neovim LSP owns navigation and code intelligence.
+- Conform owns formatting. Language-server formatting is disabled where Conform has an explicit formatter.
+- Code diagnostics come from language servers. `nvim-lint` is reserved for Markdown.
+- Mason integrations install tools, but project-local executables and Rust project toolchains take precedence at runtime.
+
+# Invariants
+
+1. LSP attachment must not load picker, completion, or debugger UI. Telescope and its bookmarks extension load on the first picker action; Blink and snippets load on `InsertEnter`. Rust does not automatically build debugger targets. Python environments are discovered by `core.project`; the environment picker loads on demand.
+2. A frontend buffer uses Oxlint when its project opts into OXC tooling; otherwise ESLint may attach when an ESLint configuration exists. They must not attach together.
+3. Oxfmt formats projects that opt into it. Other frontend projects use Prettierd or Prettier. Oxlint does not run as a formatter.
+4. Python uses Basedpyright for types and Ruff for linting. Ruff hover is disabled, and save-time formatting does not apply broad Ruff fixes.
+5. Rust Analyzer follows `rust-toolchain.toml` or the user's rustup default; the editor never forces the stable toolchain.
+6. Each external tool has one installer owner: LSP servers use `mason-lspconfig`; formatters, linters without an LSP, and debug adapters use `mason-tool-installer`.
+7. Treesitter is registered at startup and starts highlighting on `FileType`, including files opened after startup. Missing parsers retain native syntax. Parser installation and non-LSP tool installation are explicit commands.
+8. Snacks owns document reference highlighting. No second CursorHold handler sends duplicate LSP requests.
+9. Files classified by Snacks as big files have no syntax parsing, automatic completion, indent/scope rendering, or save-time formatting. This includes files over 1.5 MiB and files with excessively long average lines.
+
+# Key decisions
+
+- Keep the existing plugin stack. Optimize loading dependencies instead of removing useful development features.
+- Register Treesitter and rustaceanvim eagerly because their current versions rely on runtime paths and filetype plugins. Their expensive language work remains buffer-specific.
+- Use `cargo check` for routine Rust diagnostics, retaining build-script and procedural-macro analysis. `<leader>cC` runs full workspace Clippy explicitly in a terminal; `<leader>dr` loads debugger targets on demand.
+- Keep formatting synchronous before save so the file on disk is formatted. Budget 300 ms for Lua, 750 ms for Markdown/SQL, and 500 ms otherwise. Slow formatting remains available through the asynchronous manual command. Formatter failures are visible.
+- Big files use plain text rendering rather than falling back to expensive legacy syntax. Snacks quickfile is disabled so it cannot independently start another highlighter.
+- Treesitter query compilation is scheduled after file opening, and context loads at `VeryLazy`. This allows an initial frame before expensive first-language query compilation. Existing native highlighters are reused.
+- Treesitter owns Vue colors. Native semantic tokens are disabled for Vue buffers with Neovim 0.12's supported buffer filter; TypeScript/JavaScript buffers keep their semantic tokens.
+
+# Interfaces and data flow
+
+- `core.project.eslint_root()` and `core.project.oxlint_root()` are mutually exclusive inputs to LSP root selection.
+- `core.project.oxfmt_root()` selects the frontend Conform formatter.
+- `:Typecheck` runs the nearest package `typecheck` script, or falls back to project-local `tsc --noEmit`. TypeScript diagnostics are written to quickfix.
+- Python interpreter discovery prefers active environments, then project virtual environments, then the system interpreter.
+
+# Failure behavior
+
+- Missing optional project tools do not start duplicate fallbacks. Commands report a direct error instead.
+- `sqls` is enabled only when an existing binary is available or Go can build the Mason package.
+- Failed typechecks open parsed TypeScript diagnostics in quickfix; unparseable command failures are reported verbatim.
+
+# Validation strategy
+
+- Load the configuration headlessly and run plugin health checks.
+- Verify Blink and Telescope remain unloaded before their first user action.
+- Test ESLint and OXC fixture projects to confirm exclusive LSP ownership.
+- Test a Python virtual environment and a Rust project with a toolchain override.
+- Compare repeated warm `--startuptime` medians rather than single-run or plugin marketing figures.
+- Verify initial and subsequent TypeScript/Rust buffers have active highlighters, and the native node-selection shortcuts expand/shrink selections.
+- Verify a 1.8 MiB file opens with a UI, skips parsing/rendering helpers, and skips automatic formatting.
+- Run `tests/config.lua` inside the normal configuration for loading and formatting invariants. Measure the previous workspace snapshot and current configuration under the same UI client and cache conditions.

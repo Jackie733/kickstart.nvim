@@ -1,14 +1,11 @@
 return {
   {
     'linux-cultist/venv-selector.nvim',
-    ft = 'python',
     cmd = {
       'VenvSelect',
     },
     dependencies = {
       'neovim/nvim-lspconfig',
-      'nvim-telescope/telescope.nvim',
-      'mfussenegger/nvim-dap-python',
     },
     keys = {
       { '<leader>cv', '<cmd>VenvSelect<cr>', desc = '[C]ode Select Python VirtualEnv', ft = 'python' },
@@ -17,6 +14,7 @@ return {
       options = {
         notify_user_on_venv_activation = true,
         override_notify = false,
+        picker = 'snacks',
       },
     },
   },

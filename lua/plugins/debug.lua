@@ -17,9 +17,8 @@ return {
     -- Required dependency for nvim-dap-ui
     'nvim-neotest/nvim-nio',
 
-    -- Installs the debug adapters for you
+    -- Debug adapters are installed by mason-tool-installer.nvim.
     'mason-org/mason.nvim',
-    'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
     'mfussenegger/nvim-dap-python',
@@ -96,26 +95,7 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
-
-    require('mason-nvim-dap').setup {
-      -- Makes a best effort to setup the various debuggers with
-      -- reasonable debug configurations
-      automatic_installation = true,
-
-      -- You can provide additional configuration to the handlers,
-      -- see mason-nvim-dap README for more information
-      handlers = {
-        python = function() end,
-      },
-
-      -- You'll need to check that you have the required things installed
-      -- online, please don't ask me how to install them :)
-      ensure_installed = {
-        'python',
-        'js',
-        'codelldb',
-      },
-    }
+    local project = require 'core.project'
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
@@ -157,6 +137,13 @@ return {
     end
 
     local js_filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue' }
+    local function typescript_runtime()
+      local runtime = project.find_node_bin(0, 'tsx') or project.find_node_bin(0, 'ts-node')
+      if not runtime then
+        error 'Install tsx or ts-node in the project before debugging TypeScript files'
+      end
+      return runtime
+    end
     for _, language in ipairs(js_filetypes) do
       dap.configurations[language] = {
         {
@@ -166,7 +153,7 @@ return {
           program = '${file}',
           cwd = '${workspaceFolder}',
           sourceMaps = true,
-          runtimeExecutable = language:find 'typescript' and (vim.fn.executable 'tsx' == 1 and 'tsx' or 'ts-node') or nil,
+          runtimeExecutable = language:find 'typescript' and typescript_runtime or nil,
           skipFiles = { '<node_internals>/**', 'node_modules/**' },
           resolveSourceMapLocations = { '${workspaceFolder}/**', '!**/node_modules/**' },
         },
@@ -206,7 +193,6 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    local project = require 'core.project'
     local function python_path()
       return project.python_path(0)
     end

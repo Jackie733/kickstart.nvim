@@ -17,6 +17,11 @@ end, { desc = 'Go to next [D]iagnostic message' })
 map('n', 'gl', vim.diagnostic.open_float, { desc = 'Show diagnostic error messages' })
 map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+vim.api.nvim_create_user_command('Typecheck', function()
+  require('core.project').typecheck(0)
+end, { desc = 'Run the project TypeScript typecheck' })
+map('n', '<leader>ct', '<cmd>Typecheck<cr>', { desc = '[C]ode [T]ypecheck project' })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.

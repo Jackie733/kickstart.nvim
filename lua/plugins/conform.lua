@@ -1,19 +1,11 @@
 local project = require 'core.project'
+local save_timeout_ms = { lua = 300, markdown = 750, sql = 750 }
 
 local function frontend_formatters(bufnr)
-  if project.has_oxc_tooling(bufnr) then
+  if project.has_oxfmt(bufnr) then
     local conform = require 'conform'
-    local formatters = {}
-
-    if project.has_oxlint(bufnr) and conform.get_formatter_info('oxlint', bufnr).available then
-      table.insert(formatters, 'oxlint')
-    end
-    if project.has_oxfmt(bufnr) and conform.get_formatter_info('oxfmt', bufnr).available then
-      table.insert(formatters, 'oxfmt')
-    end
-
-    if #formatters > 0 then
-      return formatters
+    if conform.get_formatter_info('oxfmt', bufnr).available then
+      return { 'oxfmt' }
     end
   end
 
@@ -38,14 +30,16 @@ return {
     },
   },
   opts = {
-    notify_on_error = false,
-    format_on_save = {
-      timeout_ms = 1000,
-      lsp_format = 'fallback',
-    },
+    notify_on_error = true,
+    format_on_save = function(bufnr)
+      if require('core.buffer').is_bigfile(bufnr) then
+        return
+      end
+      return { timeout_ms = save_timeout_ms[vim.bo[bufnr].filetype] or 500, lsp_format = 'fallback' }
+    end,
     formatters_by_ft = {
       lua = { 'stylua' },
-      python = { 'ruff_organize_imports', 'ruff_fix', 'ruff_format' },
+      python = { 'ruff_organize_imports', 'ruff_format' },
       rust = { 'rustfmt' },
       sql = { 'sqruff' },
       sh = { 'shfmt' },

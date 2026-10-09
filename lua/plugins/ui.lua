@@ -277,8 +277,16 @@ return {
       scroll = { enabled = false },
       statuscolumn = { enabled = false },
       words = { enabled = true },
-      bigfile = { enabled = true },
-      quickfile = { enabled = true },
+      bigfile = {
+        enabled = true,
+        notify = false,
+        size = require('core.buffer').bigfile_size,
+        setup = function(ctx)
+          require('core.buffer').disable_bigfile(ctx.buf)
+        end,
+      },
+      -- FileType starts Treesitter consistently for initial and subsequent files.
+      quickfile = { enabled = false },
       lazygit = {
         win = {
           width = 0.98,

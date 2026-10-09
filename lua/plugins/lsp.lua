@@ -1,12 +1,12 @@
 return {
   'neovim/nvim-lspconfig',
   event = { 'BufReadPre', 'BufNewFile' },
+  cmd = { 'MasonToolsInstall', 'MasonToolsUpdate', 'MasonToolsClean' },
   dependencies = {
     { 'mason-org/mason.nvim', opts = {} },
     'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     'b0o/SchemaStore.nvim',
-    'saghen/blink.cmp',
   },
   config = function()
     local project = require 'core.project'
@@ -16,14 +16,20 @@ return {
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
     end
 
-    local function root_dir(root_fn)
+    local function root_dir(root_fn, fallback_to_cwd)
       return function(bufnr, on_dir)
         local root = root_fn(bufnr)
         if root then
           on_dir(root)
-        else
+        elseif fallback_to_cwd then
           on_dir(vim.fn.getcwd())
         end
+      end
+    end
+
+    local function telescope_lsp(picker)
+      return function()
+        require('telescope.builtin')[picker]()
       end
     end
 
@@ -41,7 +47,7 @@ return {
     local function ts_go_to_source_definition(client, bufnr)
       local params = vim.lsp.util.make_position_params(vim.api.nvim_get_current_win(), client.offset_encoding)
       client:exec_cmd({
-        command = '_typescript.goToSourceDefinition',
+        command = 'typescript.goToSourceDefinition',
         title = 'Go to source definition',
         arguments = { params.textDocument.uri, params.position },
       }, { bufnr = bufnr }, function(err, result)
@@ -58,29 +64,12 @@ return {
     end
 
     local function client_supports_method(client, method, bufnr)
-      if vim.fn.has 'nvim-0.11' == 1 then
-        return client:supports_method(method, bufnr)
-      end
-      return client.supports_method(method, { bufnr = bufnr })
+      return client:supports_method(method, bufnr)
     end
 
     local function disable_formatting(client)
       client.server_capabilities.documentFormattingProvider = false
       client.server_capabilities.documentRangeFormattingProvider = false
-    end
-
-    local semantic_tokens_full_by_client = {}
-    local function set_full_semantic_tokens(client, enabled)
-      local semantic_tokens = client.server_capabilities.semanticTokensProvider
-      if not semantic_tokens then
-        return
-      end
-
-      if semantic_tokens_full_by_client[client.id] == nil then
-        semantic_tokens_full_by_client[client.id] = semantic_tokens.full
-      end
-
-      semantic_tokens.full = enabled and semantic_tokens_full_by_client[client.id] or false
     end
 
     vim.api.nvim_create_autocmd('LspAttach', {
@@ -89,12 +78,12 @@ return {
         map_lsp(event, '<leader>cr', vim.lsp.buf.rename, '[C]ode [R]ename')
         map_lsp(event, '<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
         map_lsp(event, 'gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-        map_lsp(event, 'gd', require('telescope.builtin').lsp_definitions, '[G]oto [d]efinition')
-        map_lsp(event, 'gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-        map_lsp(event, 'gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-        map_lsp(event, 'gy', require('telescope.builtin').lsp_type_definitions, '[G]oto T[y]pe Definition')
-        map_lsp(event, '<leader>cs', require('telescope.builtin').lsp_document_symbols, '[C]ode [S]ymbols')
-        map_lsp(event, '<leader>cS', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[C]ode Workspace [S]ymbols')
+        map_lsp(event, 'gd', telescope_lsp 'lsp_definitions', '[G]oto [d]efinition')
+        map_lsp(event, 'gr', telescope_lsp 'lsp_references', '[G]oto [R]eferences')
+        map_lsp(event, 'gI', telescope_lsp 'lsp_implementations', '[G]oto [I]mplementation')
+        map_lsp(event, 'gy', telescope_lsp 'lsp_type_definitions', '[G]oto T[y]pe Definition')
+        map_lsp(event, '<leader>cs', telescope_lsp 'lsp_document_symbols', '[C]ode [S]ymbols')
+        map_lsp(event, '<leader>cS', telescope_lsp 'lsp_dynamic_workspace_symbols', '[C]ode Workspace [S]ymbols')
         map_lsp(event, 'K', function()
           vim.lsp.buf.hover()
         end, 'Hover Documentation')
@@ -113,27 +102,6 @@ return {
           map_lsp(event, 'gS', function()
             ts_go_to_source_definition(client, event.buf)
           end, '[G]oto [S]ource Definition')
-        end
-
-        if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
-          local highlight_group = vim.api.nvim_create_augroup('tsien-lsp-highlight', { clear = false })
-          vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-            buffer = event.buf,
-            group = highlight_group,
-            callback = vim.lsp.buf.document_highlight,
-          })
-          vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-            buffer = event.buf,
-            group = highlight_group,
-            callback = vim.lsp.buf.clear_references,
-          })
-          vim.api.nvim_create_autocmd('LspDetach', {
-            group = vim.api.nvim_create_augroup('tsien-lsp-detach', { clear = true }),
-            callback = function(detach_event)
-              vim.lsp.buf.clear_references()
-              vim.api.nvim_clear_autocmds { group = 'tsien-lsp-highlight', buffer = detach_event.buf }
-            end,
-          })
         end
 
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
@@ -162,7 +130,7 @@ return {
       },
     }
 
-    local capabilities = require('blink.cmp').get_lsp_capabilities()
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
     local vue_language_server_path = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
 
     local ts_inlay_hints = {
@@ -218,7 +186,11 @@ return {
         },
         on_attach = function(client, bufnr)
           disable_formatting(client)
-          set_full_semantic_tokens(client, vim.bo[bufnr].filetype ~= 'vue')
+          if vim.bo[bufnr].filetype == 'vue' then
+            -- Neovim 0.12 accepts a buffer or a client filter, never both.
+            -- Treesitter owns Vue colors; retain semantic tokens in TS/JS buffers.
+            vim.lsp.semantic_tokens.enable(false, { bufnr = bufnr })
+          end
         end,
       },
       vue_ls = {
@@ -235,10 +207,14 @@ return {
         on_attach = disable_formatting,
       },
       eslint = {
+        root_dir = root_dir(project.eslint_root),
         settings = {
           workingDirectory = { mode = 'auto' },
           format = false,
         },
+      },
+      oxlint = {
+        root_dir = root_dir(project.oxlint_root),
       },
       tailwindcss = {
         filetypes = {
@@ -292,7 +268,7 @@ return {
         },
       },
       basedpyright = {
-        root_dir = root_dir(project.python_root),
+        root_dir = root_dir(project.python_root, true),
         settings = {
           basedpyright = {
             disableOrganizeImports = true,
@@ -314,7 +290,7 @@ return {
         end,
       },
       ruff = {
-        root_dir = root_dir(project.python_root),
+        root_dir = root_dir(project.python_root, true),
         init_options = {
           settings = {
             logLevel = 'error',
@@ -328,7 +304,7 @@ return {
       sqls = {
         root_dir = root_dir(function(bufnr)
           return vim.fs.root(bufnr, { '.sqruff', '.git' })
-        end),
+        end, true),
         on_attach = disable_formatting,
       },
     }
@@ -338,6 +314,7 @@ return {
       'vtsls',
       'vue_ls',
       'eslint',
+      'oxlint',
       'tailwindcss',
       'html',
       'cssls',
@@ -346,8 +323,11 @@ return {
       'basedpyright',
       'ruff',
       'sqruff',
-      'sqls',
     }
+    local has_external_sqls = vim.fn.executable 'sqls' == 1
+    if has_external_sqls or vim.fn.executable 'go' == 1 then
+      table.insert(server_names, 'sqls')
+    end
     for _, server_name in ipairs(server_names) do
       local server = servers[server_name]
       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
@@ -355,8 +335,8 @@ return {
     end
 
     local mason_server_names = vim.tbl_filter(function(server_name)
-      -- Mason builds sqls from source and requires Go; use an existing binary when available.
-      return server_name ~= 'sqls' or vim.fn.executable 'sqls' == 0
+      -- Mason builds sqls from source and requires Go; keep an existing binary external.
+      return server_name ~= 'sqls' or not has_external_sqls
     end, server_names)
 
     require('mason-lspconfig').setup {
@@ -365,20 +345,22 @@ return {
     }
 
     require('mason-tool-installer').setup {
+      run_on_start = false,
       ensure_installed = {
         'stylua',
         'prettierd',
         'prettier',
-        'ruff',
+        'oxfmt',
         'shfmt',
-        'html-lsp',
-        'css-lsp',
-        'json-lsp',
-        'yaml-language-server',
         'markdownlint',
         'debugpy',
         'js-debug-adapter',
         'codelldb',
+      },
+      integrations = {
+        ['mason-lspconfig'] = false,
+        ['mason-null-ls'] = false,
+        ['mason-nvim-dap'] = false,
       },
     }
 

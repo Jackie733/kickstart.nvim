@@ -2,9 +2,6 @@ return {
   {
     'tomasky/bookmarks.nvim',
     event = 'VeryLazy',
-    dependencies = {
-      'nvim-telescope/telescope.nvim',
-    },
     keys = {
       {
         '<leader>km',
@@ -59,8 +56,6 @@ return {
           ['@n'] = ' ', -- mark annotation startswith @n ,signs this icon as `Note`
         },
       }
-
-      require('telescope').load_extension 'bookmarks'
     end,
   },
 }
