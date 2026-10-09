@@ -1,0 +1,27 @@
+-- Baseline: gruber-darker.nvim 35cb97959ef01f7193c94c404c13ddb3d4346654 (default options).
+-- Derived from blazkowolf/gruber-darker.nvim; see LICENSE.gruber-darker.
+return {
+  ['bg'] = '#181818',
+  ['bg+1'] = '#282828',
+  ['bg+2'] = '#453d41',
+  ['bg+3'] = '#484848',
+  ['bg+4'] = '#52494e',
+  ['bg-1'] = '#101010',
+  ['black'] = '#000000',
+  ['brown'] = '#cc8c3c',
+  ['fg'] = '#e4e4e4',
+  ['fg+1'] = '#f4f4ff',
+  ['fg+2'] = '#f5f5f5',
+  ['green'] = '#73d936',
+  ['niagara'] = '#96a6c8',
+  ['niagara-1'] = '#565f73',
+  ['niagara-2'] = '#303540',
+  ['none'] = 'NONE',
+  ['quartz'] = '#95a99f',
+  ['red'] = '#f43841',
+  ['red+1'] = '#ff4f58',
+  ['red-1'] = '#c73c3f',
+  ['white'] = '#ffffff',
+  ['wisteria'] = '#9e95c7',
+  ['yellow'] = '#ffdd33',
+}

@@ -92,5 +92,8 @@ require('lazy').setup({
   },
 })
 
+-- Apply one theme after eager theme plugins have completed setup.
+vim.cmd.colorscheme(TsienVimConfig.colorscheme)
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -1,5 +1,8 @@
 local M = {}
 
+-- 默认主题：tsien-dark / kanagawa-wave / kanagawa-dragon / kanagawa-lotus
+M.colorscheme = 'tsien-dark'
+
 local Icons = {
   misc = {
     dots = '󰇘',
