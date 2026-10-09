@@ -60,6 +60,26 @@ local function run()
   vim.cmd.colorscheme 'default'
   vim.cmd.colorscheme(reference and 'gruber-darker' or 'tsien-dark')
   local expected = snapshot()
+  if reference then
+    -- Intentional palette substitutions also apply to inherited and terminal colors.
+    local colors = { [0xffdd33] = 0xe6c72e, [0x73d936] = 0x68c431 }
+    for _, definitions in ipairs { expected.definitions, expected.resolved } do
+      for _, attrs in pairs(definitions) do
+        for _, key in ipairs { 'fg', 'bg', 'sp' } do
+          if colors[attrs[key]] then
+            attrs[key] = colors[attrs[key]]
+          end
+        end
+      end
+    end
+    for key, color in pairs(expected.terminal) do
+      if color == '#ffdd33' then
+        expected.terminal[key] = '#e6c72e'
+      elseif color == '#73d936' then
+        expected.terminal[key] = '#68c431'
+      end
+    end
+  end
   vim.cmd.colorscheme 'default'
   vim.cmd.colorscheme 'tsien-dark'
   assert(vim.g.colors_name == 'tsien-dark', 'Local theme did not load')

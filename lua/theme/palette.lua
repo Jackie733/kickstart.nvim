@@ -1,5 +1,6 @@
 -- Baseline: gruber-darker.nvim 35cb97959ef01f7193c94c404c13ddb3d4346654 (default options).
 -- Derived from blazkowolf/gruber-darker.nvim; see LICENSE.gruber-darker.
+-- Yellow and green are slightly darker than the baseline for softer emphasis.
 return {
   ['bg'] = '#181818',
   ['bg+1'] = '#282828',
@@ -12,7 +13,7 @@ return {
   ['fg'] = '#e4e4e4',
   ['fg+1'] = '#f4f4ff',
   ['fg+2'] = '#f5f5f5',
-  ['green'] = '#73d936',
+  ['green'] = '#68c431',
   ['niagara'] = '#96a6c8',
   ['niagara-1'] = '#565f73',
   ['niagara-2'] = '#303540',
@@ -23,5 +24,5 @@ return {
   ['red-1'] = '#c73c3f',
   ['white'] = '#ffffff',
   ['wisteria'] = '#9e95c7',
-  ['yellow'] = '#ffdd33',
+  ['yellow'] = '#e6c72e',
 }

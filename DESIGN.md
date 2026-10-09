@@ -68,9 +68,9 @@ TsienVim is a personal Neovim configuration for JavaScript/TypeScript, Vue, Rust
 
 ## Readability adjustments
 
-- Preserve every original palette value, terminal color and theme lifecycle behavior. Property and modern member captures use `niagara` rather than the dim `niagara-1`; search and completion colors retain their original mappings.
+- Preserve theme lifecycle behavior. Yellow is slightly darker (`#ffdd33` → `#e6c72e`) and green is slightly darker (`#73d936` → `#68c431`); these changes also apply to their terminal colors. Other palette values retain the baseline. Property and modern member captures use `niagara` rather than the dim `niagara-1`; search and completion colors retain their original mappings.
 - Inline diagnostic messages use non-bold text: red errors, brown warnings, quartz information, and wisteria hints. Gutter signs and floating diagnostics retain severity colors. Message content and LSP diagnostic display settings remain unchanged.
 - MatchParen and ErrorMsg use black text on their colored backgrounds. Folded text uses the normal foreground for readability. Diff lines have the existing raised background; DiffText uses the selection background, bold text and underline to distinguish changed characters.
-- Tests enforce at least 4.5:1 text contrast for changed reading roles, quieter inline warnings, preserved warning-sign emphasis, and distinct diff character emphasis. Optional upstream comparison excludes only the documented changed definitions and their inherited appearance; all other definitions and terminal behavior remain checked.
+- Tests enforce at least 4.5:1 text contrast for changed reading roles, quieter inline warnings, preserved warning-sign emphasis, and distinct diff character emphasis. Optional upstream comparison excludes only the documented changed definitions and their inherited appearance; all other definitions and terminal behavior remain checked after applying the documented yellow/green substitutions.
 
 - Native Vue syntax gives the whole script region the `javaScript` group, which upstream links to yellow Special. Tsien Dark links that region to Identifier for readable fallback text. Parser installation remains explicit on each machine; Treesitter startup failures for configured languages show the underlying error and `:TSInstallConfigured` recovery command.
