@@ -63,8 +63,11 @@ return {
             if not highlighter then
               local ok, err = pcall(vim.treesitter.start, event.buf, lang)
               if not ok then
-                if lang == 'vue' then
-                  vim.notify_once('Vue Treesitter could not start. Run :TSInstallConfigured, then restart Neovim.\n' .. tostring(err), vim.log.levels.WARN)
+                if vim.tbl_contains(parsers, lang) then
+                  vim.notify_once(
+                    'Treesitter could not start for ' .. lang .. '. Run :TSInstallConfigured, then restart Neovim.\n' .. tostring(err),
+                    vim.log.levels.WARN
+                  )
                 end
                 return -- Missing parsers keep Neovim's normal syntax and indentation.
               end
