@@ -289,6 +289,11 @@ return {
       -- FileType starts Treesitter consistently for initial and subsequent files.
       quickfile = { enabled = false },
       lazygit = {
+        theme = {
+          -- MatchParen has a black foreground, unsuitable for terminal borders.
+          activeBorderColor = { fg = 'Keyword', bold = true },
+          searchingActiveBorderColor = { fg = 'Function', bold = true },
+        },
         win = {
           width = 0.98,
           height = 0.98,

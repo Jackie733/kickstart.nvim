@@ -82,6 +82,8 @@ return {
         auto_show = true,
         auto_show_delay_ms = 200,
         update_delay_ms = 120,
+        -- Keep completion floats from parsing documentation while typing.
+        treesitter_highlighting = false,
         window = {
           max_height = 12,
           border = 'rounded', -- 文档窗口边框
@@ -131,6 +133,7 @@ return {
       enabled = true,
       window = {
         border = 'rounded',
+        treesitter_highlighting = false,
       },
     },
   },
