@@ -301,6 +301,9 @@ return {
       },
       dashboard = {
         enabled = true,
+        formats = {
+          header = { '%s', align = 'center', hl = 'String' },
+        },
         preset = {
           keys = {
             { icon = ' ', key = 'f', desc = 'Find File', action = ':Telescope find_files' },
