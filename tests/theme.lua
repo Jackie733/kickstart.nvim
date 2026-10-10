@@ -34,6 +34,26 @@ local function run()
     MiniIconsPurple = true,
     MiniIconsRed = true,
     MiniIconsYellow = true,
+    FloatBorder = true,
+    Identifier = true,
+    IncSearch = true,
+    LineNr = true,
+    Search = true,
+    String = true,
+    Visual = true,
+    BlinkCmpMenu = true,
+    BlinkCmpMenuBorder = true,
+    BlinkCmpMenuSelection = true,
+    BlinkCmpLabel = true,
+    BlinkCmpLabelMatch = true,
+    BlinkCmpLabelDeprecated = true,
+    BlinkCmpLabelDetail = true,
+    BlinkCmpLabelDescription = true,
+    BlinkCmpSource = true,
+    BlinkCmpKind = true,
+    BlinkCmpDocBorder = true,
+    BlinkCmpDocSeparator = true,
+    BlinkCmpSignatureHelpBorder = true,
   }
   local function affected(name, definitions)
     if changed[name] then
@@ -124,7 +144,19 @@ local function run()
     local a, b = luminance(fg), luminance(bg)
     return (math.max(a, b) + 0.05) / (math.min(a, b) + 0.05)
   end
-  for _, name in ipairs { '@property', '@variable.member', 'MatchParen', 'ErrorMsg', 'Folded', 'DiffText', 'DiagnosticVirtualTextWarn' } do
+  for _, name in ipairs {
+    '@property',
+    '@variable.member',
+    'MatchParen',
+    'ErrorMsg',
+    'Folded',
+    'DiffText',
+    'DiagnosticVirtualTextWarn',
+    'LineNr',
+    'Search',
+    'CurSearch',
+    'Visual',
+  } do
     local attrs = hl(name)
     assert(contrast(attrs.fg, attrs.bg or hl('Normal').bg) >= 4.5, name .. ' has insufficient text contrast')
   end
@@ -135,6 +167,18 @@ local function run()
   assert(luminance(hl('DiagnosticVirtualTextWarn').fg) < luminance(hl('Keyword').fg), 'Inline warning competes with keywords')
   assert(hl('DiagnosticSignWarn').fg == hl('Keyword').fg, 'Warning sign lost its emphasis')
   assert(hl('DiffText').bg ~= hl('DiffChange').bg and hl('DiffText').underline, 'Changed characters need distinct emphasis')
+  assert(hl('Identifier').fg == hl('Normal').fg, 'Identifiers should not be brighter than body text')
+  assert(not hl('String').italic and hl('Comment').italic, 'String and comment reading styles differ')
+  assert(hl('CurSearch').bg == hl('Keyword').fg and hl('CurSearch').bg ~= hl('Search').bg, 'Current search needs distinct emphasis')
+  assert(hl('Visual').fg == hl('Normal').fg, 'Selected syntax needs a readable uniform foreground')
+  assert(contrast(hl('BlinkCmpMenuBorder').fg, hl('Pmenu').bg) >= 3, 'Completion border is too faint')
+  for _, name in ipairs { 'BlinkCmpLabel', 'BlinkCmpLabelMatch', 'BlinkCmpLabelDescription', 'BlinkCmpLabelDetail', 'BlinkCmpKind' } do
+    for _, background in ipairs { hl('Pmenu').bg, hl('PmenuSel').bg } do
+      assert(contrast(hl(name).fg, background) >= 4.5, name .. ' is unreadable in a completion state')
+    end
+  end
+  assert(luminance(hl('BlinkCmpLabelDescription').fg) < luminance(hl('BlinkCmpLabel').fg), 'Completion descriptions compete with labels')
+  assert(not hl('BlinkCmpMenuSelection').fg, 'Completion selection foreground overrides matched letters')
   assert(vim.deep_equal(actual.terminal, expected.terminal), 'Terminal palette differs')
   assert(actual.cursor == expected.cursor, 'Cursor styling differs')
   assert(actual.background == expected.background, 'Background mode differs')

@@ -25,4 +25,9 @@ return {
   ['white'] = '#ffffff',
   ['wisteria'] = '#9e95c7',
   ['yellow'] = '#e6c72e',
+  -- Reading and UI roles are separate from the inherited syntax palette.
+  ['ui-muted'] = '#8a817c',
+  ['menu-muted'] = '#b2a9a3',
+  ['border'] = '#78716c',
+  ['search-bg'] = '#403a20',
 }

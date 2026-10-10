@@ -5,19 +5,19 @@ return {
     -- rustaceanvim loads through ftplugin/rust.lua; register its runtime early.
     lazy = false,
     init = function()
-      local cargo_home = vim.env.CARGO_HOME or vim.fs.joinpath(vim.uv.os_homedir(), '.cargo')
-      local rustup_proxy = vim.fs.joinpath(cargo_home, 'bin', 'rust-analyzer')
-      local rust_analyzer = vim.fn.executable(rustup_proxy) == 1 and rustup_proxy or 'rust-analyzer'
+      local environment = require 'core.environment'
 
       vim.g.rustaceanvim = {
         tools = {},
         server = {
-          cmd = { rust_analyzer },
+          cmd = function()
+            return { environment.rust_analyzer() or 'rust-analyzer' }
+          end,
           auto_attach = function(bufnr)
             return vim.bo[bufnr].buftype == ''
               and vim.api.nvim_buf_get_name(bufnr) ~= ''
-              and vim.fn.executable(rust_analyzer) == 1
               and not require('core.buffer').is_bigfile(bufnr)
+              and environment.rust_analyzer(bufnr) ~= nil
           end,
           on_attach = function(client, bufnr)
             local map = function(keys, func, desc)
