@@ -93,7 +93,9 @@ require('lazy').setup({
 })
 
 -- Apply one theme after eager theme plugins have completed setup.
-vim.cmd.colorscheme(TsienVimConfig.colorscheme)
+local theme = require 'core.theme'
+theme.setup()
+theme.apply()
 require('core.environment').register()
 
 -- The line beneath this is called `modeline`. See `:help modeline`

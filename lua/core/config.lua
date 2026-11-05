@@ -1,7 +1,12 @@
 local M = {}
 
--- 默认主题：tsien-dark / kanagawa-wave / kanagawa-dragon / kanagawa-lotus
-M.colorscheme = 'tsien-dark'
+-- 默认主题：'auto' 跟随终端亮暗背景（dark → tsien-dark, light → tsien-light）。
+-- 也可固定为 tsien-dark / tsien-light / kanagawa-wave / kanagawa-dragon / kanagawa-lotus。
+M.colorscheme = 'auto'
+M.background_themes = {
+  dark = 'tsien-dark',
+  light = 'tsien-light',
+}
 
 local Icons = {
   misc = {

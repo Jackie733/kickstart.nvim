@@ -3,10 +3,20 @@
 package.loaded['theme.palette'] = nil
 package.loaded['theme.highlights'] = nil
 
+-- A terminal background change reloads the active colorscheme. Follow the terminal
+-- instead of restoring this theme's value; core.theme switches themes afterwards.
+local background_reload = vim.g.tsien_background_reload
+vim.g.tsien_background_reload = nil
+
 if vim.g.colors_name then
   vim.cmd 'highlight clear'
 end
 vim.opt.termguicolors = true
+-- Keep 'background' changes from reloading the previous colorscheme mid-switch.
+vim.g.colors_name = nil
+if not background_reload then
+  vim.opt.background = 'dark'
+end
 vim.g.colors_name = 'tsien-dark'
 
 local c = require 'theme.palette'

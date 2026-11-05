@@ -79,19 +79,23 @@ Rust: `<leader>cC` runs workspace Clippy in a terminal; `<leader>dr` selects a d
 
 ## Theme
 
-The default theme is the local, dependency-free `tsien-dark`. Change `M.colorscheme` near the top of `lua/core/config.lua`, then restart Neovim. Alternatives include `kanagawa-wave`, `kanagawa-dragon`, and `kanagawa-lotus`.
+The default is `M.colorscheme = 'auto'`: Neovim reports the terminal background through an OSC 11 query (with `$COLORFGBG` as a fallback for terminals that export it), and `core.theme` loads `tsien-dark` for dark terminals or `tsien-light` for light terminals. If detection is unavailable, `'background'` stays dark, so the default remains dark. To pin a theme, set `M.colorscheme` to a name such as `tsien-dark`, `tsien-light`, `kanagawa-wave`, `kanagawa-dragon`, or `kanagawa-lotus`; background changes no longer swap pinned themes, and a pinned Tsien theme restores its own background.
 
-For a temporary switch, run `:colorscheme tsien-dark` or `:colorscheme kanagawa-wave`. Use `:colorscheme <Tab>` to see available themes.
+In auto mode, runtime background changes also switch themes: Neovim re-queries the terminal after resuming from suspend, and `:set background=light` or `:set background=dark` switches immediately. A manually selected third-party theme is left alone. For a direct switch, run `:colorscheme tsien-dark` or `:colorscheme tsien-light`. Use `:colorscheme <Tab>` to see available themes.
 
-### Maintaining Tsien Dark
+### Maintaining Tsien themes
 
-- `lua/theme/palette.lua`: the upstream palette with local color adjustments, keeping its original names. Start here to adjust the overall look.
-- `lua/theme/highlights.lua`: upstream highlight definitions plus local readability adjustments, including syntax, diagnostics, and plugin integrations. Change `Comment.italic` here to disable italic comments.
-- `colors/tsien-dark.lua`: native colorscheme entry and terminal palette. No plugin is needed to load it.
+- `lua/core/theme.lua`: resolves `auto` from the terminal background, applies the selected colorscheme, and swaps Tsien themes when `'background'` changes.
+- `lua/theme/palette.lua`: the upstream dark palette with local color adjustments, keeping its original names. Start here to adjust the dark look.
+- `lua/theme/highlights.lua`: shared highlight definitions plus dark readability adjustments, including syntax, diagnostics, and plugin integrations. Change `Comment.italic` here to disable italic comments.
+- `lua/theme/palette-light.lua` and `lua/theme/highlights-light.lua`: the One Light inspired light palette and its explicit overrides. The light theme reuses the shared structure and overrides roles that assume a dark background.
+- `colors/tsien-dark.lua` and `colors/tsien-light.lua`: native colorscheme entries and terminal palettes. No plugin is needed to load them.
 
 The first version reproduces gruber-darker.nvim default options at commit `35cb97959ef01f7193c94c404c13ddb3d4346654`. Colors, links, bold/italic styles, terminal colors, cursor styling, help/quickfix window behavior, and semantic-highlight clearing match that baseline. File icons use explicit `MiniIcons*` palette colors: blue for TypeScript/Lua, green for Vue, yellow for JSON, and brown for Rust. The theme name is `tsien-dark`; upstream `GruberDarker*` highlight names are retained to preserve their links. Upstream attribution and MIT license are in `lua/theme/LICENSE.gruber-darker`. Local changes are independent of future upstream updates. Current adjustments brighten property/member captures using the existing `niagara` color; soften inline diagnostics without bold text while retaining severity-colored gutter signs; improve matching-bracket, error-message and folded-text contrast; and distinguish changed diff characters with a stronger background and underline. Yellow (`#e6c72e`) and green (`#68c431`) are slightly darker than upstream for softer emphasis; other palette values retain the baseline.
 
-After saving a palette or highlight edit, run `:colorscheme tsien-dark` to reload both modules. Use `:Inspect` on code to identify the Treesitter/LSP groups involved, and `:highlight GroupName` to inspect UI groups. Prefer links to existing roles over new literal colors. Plugin-specific styling belongs in the highlight table. Keep intentional differences documented and prefer changes to specific roles over global palette substitutions.
+`tsien-light` is an independent One Light inspired colorscheme. It reuses `theme.highlights` and overrides the groups whose dark-background assumptions do not carry over: statusline and float titles use body text instead of white, diff surfaces are tinted, severity colors are remapped, and icons/rainbow delimiters get explicit One Light hues. Syntax follows One Light semantics: gray comments, purple keywords, blue functions, gold types, orange constants and numbers, green strings, red tags, and cyan escapes. Comments, muted UI text, and diff foregrounds are darkened from the Atom baseline to keep at least 4.5:1 contrast on light surfaces. Both themes set `'background'` when loaded directly and clear `g:colors_name` before doing so; `core.theme` marks terminal-driven reloads so a theme does not force its old background back before the matching theme is selected.
+
+After saving a palette or highlight edit, run `:colorscheme tsien-dark` or `:colorscheme tsien-light` to reload the modules. Use `:Inspect` on code to identify the Treesitter/LSP groups involved, and `:highlight GroupName` to inspect UI groups. Prefer links to existing roles over new literal colors. Plugin-specific styling belongs in the highlight table. Keep intentional differences documented and prefer changes to specific roles over global palette substitutions.
 
 Reading refinements preserve the inherited syntax palette: ordinary search matches use a dark warm background while the current match uses yellow; selections use a uniform readable foreground; identifiers share the body text color; strings are upright and comments remain italic. Line numbers and floating borders are clearer through separate UI roles. Blink completion has explicit yellow matched letters, quieter metadata, and subdued borders; the selected-row background preserves these text colors.
 
@@ -103,6 +107,8 @@ Run the theme lifecycle checks without any third-party theme installed:
 
 ```sh
 NVIM_LOG_FILE=/tmp/tsien-theme.log nvim --headless -u NONE -i NONE --cmd 'set rtp^=.' '+luafile tests/theme.lua'
+NVIM_LOG_FILE=/tmp/tsien-theme-light.log nvim --headless -u NONE -i NONE --cmd 'set rtp^=.' '+luafile tests/theme-light.lua'
+NVIM_LOG_FILE=/tmp/tsien-theme-auto.log nvim --headless -u NONE -i NONE --cmd 'set rtp^=.' '+autocmd VimEnter * ++nested luafile tests/theme-auto.lua'
 ```
 
 For an optional baseline comparison of unchanged definitions, set `TSIEN_THEME_REFERENCE` to a checkout of gruber-darker.nvim at the documented commit when running the same command. This reference is not part of the configured plugins. The comparison allows the documented changed groups; contrast and hierarchy checks validate those adjustments.
