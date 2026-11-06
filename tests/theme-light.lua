@@ -49,8 +49,8 @@ local function run()
     return actual.resolved[name]
   end
 
-  assert(hex(hl('Normal').bg) == '#fafafa', 'Unexpected light background')
-  assert(hex(hl('Normal').fg) == '#383a42', 'Unexpected light foreground')
+  assert(hex(hl('Normal').bg) == '#eff1f5', 'Unexpected light background')
+  assert(hex(hl('Normal').fg) == '#4c4f69', 'Unexpected light foreground')
 
   for _, name in ipairs {
     'Comment',
@@ -122,7 +122,7 @@ local function run()
     assert(actual.terminal[index] == value, 'Terminal color differs at index ' .. (index - 1))
   end
   assert(
-    actual.terminal.background == '#fafafa' and actual.terminal.foreground == '#383a42',
+    actual.terminal.background == '#eff1f5' and actual.terminal.foreground == '#4c4f69',
     'Terminal background or foreground differs'
   )
 

@@ -1,4 +1,4 @@
--- Tsien Light: a One Light inspired local colorscheme with no plugin dependencies.
+-- Tsien Light: Catppuccin Latte surfaces with One Light inspired syntax, no plugin dependencies.
 -- The shared Tsien highlight structure is reused with a light palette and explicit overrides.
 package.loaded['theme.palette-light'] = nil
 package.loaded['theme.highlights-light'] = nil
