@@ -41,8 +41,10 @@ return function(c)
     ['TelescopeTitle'] = { bold = true, fg = c['fg+2'] },
     ['PmenuSbar'] = { bg = c['bg+2'] },
     ['PmenuThumb'] = { bg = c['bg+4'] },
-    ['VertSplit'] = { bg = c['bg+1'], fg = c['bg+4'] },
-    ['WinSeparator'] = { bold = true, fg = c['bg+4'] },
+    ['VertSplit'] = { bg = c['bg'], fg = c['bg+1'] },
+    ['WinSeparator'] = { bg = c['bg'], fg = c['bg+1'] },
+    ['NeoTreeVertSplit'] = { bg = c['bg'], fg = c['bg+1'] },
+    ['NeoTreeWinSeparator'] = { bg = c['bg'], fg = c['bg+1'] },
     ['SpecialKey'] = { fg = c['menu-muted'] },
 
     -- Diff backgrounds are tinted for light windows rather than reusing raised dark surfaces.
@@ -50,6 +52,14 @@ return function(c)
     ['DiffChange'] = { bg = c['diff-change-bg'], fg = c['diff-change-fg'] },
     ['DiffDelete'] = { bg = c['diff-delete-bg'], fg = c['diff-delete-fg'] },
     ['DiffText'] = { bg = c['diff-text-bg'], fg = c['fg'], bold = true, underline = true },
+
+    -- Gutter signs and Neo-tree git labels must not inherit diff line backgrounds.
+    ['GitSignsAdd'] = { fg = c['diff-add-fg'] },
+    ['GitSignsChange'] = { fg = c['diff-change-fg'] },
+    ['GitSignsDelete'] = { fg = c['diff-delete-fg'] },
+    ['NeoTreeGitAdded'] = { fg = c['diff-add-fg'] },
+    ['NeoTreeGitModified'] = { fg = c['diff-change-fg'] },
+    ['NeoTreeGitDeleted'] = { fg = c['diff-delete-fg'] },
 
     -- Severity colors: gold warnings, cyan information and hints, red errors.
     -- Warning text uses the darker orange so inline and floating text stay readable;

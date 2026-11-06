@@ -52,6 +52,11 @@ local function run()
   assert(hex(hl('Normal').bg) == '#eff1f5', 'Unexpected light background')
   assert(hex(hl('Normal').fg) == '#4c4f69', 'Unexpected light foreground')
 
+  for _, name in ipairs { 'GitSignsAdd', 'GitSignsChange', 'GitSignsDelete', 'NeoTreeGitAdded', 'NeoTreeGitModified', 'NeoTreeGitDeleted' } do
+    assert(hl(name).fg and not hl(name).bg, name .. ' should color text without a diff background')
+  end
+  assert(hl('DiffChange').bg, 'Diff views should retain their background')
+
   for _, name in ipairs {
     'Comment',
     'LineNr',

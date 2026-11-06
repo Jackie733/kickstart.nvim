@@ -87,7 +87,7 @@ map('n', '<leader>bD', '<cmd>:bd<cr>', { desc = 'Delete Buffer and Window' })
 -- lazygit
 if vim.fn.executable 'lazygit' == 1 then
   map('n', '<leader>gg', function()
-    Snacks.lazygit()
+    Snacks.lazygit { env = { NVIM_BACKGROUND = vim.o.background } }
   end, { desc = 'Lazygit (cwd)' })
   map('n', '<leader>gf', function()
     require('telescope.builtin').git_bcommits()
